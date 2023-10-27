@@ -48,7 +48,7 @@ function removeIllegalChars(string) {
     return string.replace(/[^\w\d.]/g, '_');
 }
 
-function extractUuid(_id) {
+function extract_uuid(_id) {
     return _id.split('_').at(-2);
 }
 
@@ -56,9 +56,9 @@ function extractUuid(_id) {
 
 module.exports = {
     arrayFromObject,
-    weightedRandomlySelectItem,
     randomlySelectItem,
+    weightedRandomlySelectItem,
     formatTime,
     removeIllegalChars,
-    extractUuid
+    extract_uuid
 };

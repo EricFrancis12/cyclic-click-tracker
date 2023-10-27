@@ -7,7 +7,7 @@ const CyclicDB = require('@cyclic.sh/dynamodb');
 const db = CyclicDB(process.env.CYCLIC_DB);
 
 const campaigns = require('../../data/campaigns/campaigns');
-const { randomlySelectItem, weightedRandomlySelectItem } = require('../../utils/utils');
+const { weightedRandomlySelectItem } = require('../../utils/utils');
 
 
 

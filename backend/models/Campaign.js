@@ -8,7 +8,7 @@ const path = require('path');
 
 const inquirer = require('inquirer');
 
-const { arrayFromObject, formatTime, removeIllegalChars, randomlySelectItem, weightedRandomlySelectItem } = require('../utils/utils');
+const { arrayFromObject, formatTime, removeIllegalChars, weightedRandomlySelectItem, extract_uuid } = require('../utils/utils');
 
 
 
@@ -44,7 +44,9 @@ class Campaign {
             token.key + '=' + token.value
         )).join('&');
 
-        return `${process.env.CAMPAIGN_PROTOCOL__ || 'http://'}${process.env.CAMPAIGN_DOMAIN}/t/${this._id}?${queryString}`;
+        const uuid = extract_uuid(this._id);
+
+        return `${process.env.CAMPAIGN_PROTOCOL__ || 'http://'}${process.env.CAMPAIGN_DOMAIN}/t/${uuid}?${queryString}`;
     }
 
     expand() {

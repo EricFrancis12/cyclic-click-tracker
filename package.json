@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "preinstall": "node scripts/preinstall.js",
-    "build": "node scripts/mapFolderStructure.js",
+    "commit": "git add . && git commit -m \"data commit\" && git push origin main",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "reactDev": "cd frontend && npm i && npm start && cd ../",
+    "reactBuild": "cd frontent && npm run build && cd ../",
     "create-an": "node scripts/app/affiliateNetworks/create.js",
     "create-ca": "node scripts/app/campaigns/create.js",
     "create-lp": "node scripts/app/landingPages/create.js",

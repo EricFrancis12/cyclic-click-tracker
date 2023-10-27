@@ -10,12 +10,13 @@ const campaigns = require('../../data/campaigns/campaigns');
 const landingPages = require('../../data/landingPages/landingPages');
 const { getAllOffers } = require('../../data/affiliateNetworks/affiliateNetworks');
 const { catchAllRedirect } = require('../../config/settings.json');
+const { extract_uuid } = require('../../utils/utils');
 
 
 
-router.get('/:campaign_id', async (req, res) => {
+router.get('/:campaign_uuid', async (req, res) => {
     let viewRedirectUrl, click;
-    const campaign = campaigns.find(campaign => campaign._id === req.params.campaign_id);
+    const campaign = campaigns.find(campaign => extract_uuid(campaign._id) === req.params.campaign_uuid);
 
     if (campaign) {
         click = new Click({ campaign, req });
@@ -39,9 +40,6 @@ router.get('/:campaign_id', async (req, res) => {
 
     try {
         const clicksCollection = db.collection('clicks');
-
-        console.log(click);
-
         await clicksCollection.set(click._id, click);
     } catch (err) {
         console.error(err);
