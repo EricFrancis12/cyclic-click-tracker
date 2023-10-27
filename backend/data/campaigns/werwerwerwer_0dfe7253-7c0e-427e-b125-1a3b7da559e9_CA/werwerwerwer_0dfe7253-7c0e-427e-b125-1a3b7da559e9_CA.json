@@ -9,6 +9,7 @@
     "offerRotation": "RANDOM",
     "flow": {
         "type": "BUILT_IN",
+        "_id": "BUILT_IN_FL",
         "defaultPath": {
             "type": "DEFAULT",
             "weight": 100,

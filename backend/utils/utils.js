@@ -16,7 +16,9 @@ function randomlySelectItem(array) {
 }
 
 function weightedRandomlySelectItem(array) {
-    const totalWeight = array.reduce((total, currentItem) => total + currentItem.weight, 0);
+    const totalWeight = array.reduce((total, currentItem) => {
+        return total + (currentItem.weight ?? 100);
+    }, 0);
     let randomNum = Math.floor(Math.random() * totalWeight);
 
     for (let i = 0; i < array.length; i++) {
@@ -26,7 +28,6 @@ function weightedRandomlySelectItem(array) {
         }
     }
 
-    // If for some reason no item was selected, return null or handle it as needed
     return null;
 }
 
@@ -48,7 +49,6 @@ function removeIllegalChars(string) {
 }
 
 function extractUuid(_id) {
-    console.log(_id);
     return _id.split('_').at(-2);
 }
 

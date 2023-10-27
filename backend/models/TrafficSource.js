@@ -29,16 +29,20 @@ class TrafficSource {
     }
 
     tokensFromUrl(url) {
-        const queryString = url.split('?').at(-1);
+        const queryString = url.includes('?')
+            ? url.split('?').at(-1)
+            : '';
+
         const params = queryString.split('&');
         const result = [];
 
         params.forEach(param => {
             let [key, value] = param.split('=');
 
-            if (key === TrafficSource.defaultTokens.cost.key) value = parseFloat(value);
-
-            result.push({ key, value });
+            if (key === TrafficSource.defaultTokens.cost.key) {
+                value = parseFloat(value);
+                result.push({ key, value });
+            }
         });
 
         return result;

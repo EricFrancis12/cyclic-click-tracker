@@ -14,8 +14,6 @@ const { catchAllRedirect } = require('../../config/settings.json');
 
 
 router.get('/:campaign_id', async (req, res) => {
-    console.log('GET @ /t');
-
     let viewRedirectUrl, click;
     const campaign = campaigns.find(campaign => campaign._id === req.params.campaign_id);
 
@@ -41,6 +39,9 @@ router.get('/:campaign_id', async (req, res) => {
 
     try {
         const clicksCollection = db.collection('clicks');
+
+        console.log(click);
+
         await clicksCollection.set(click._id, click);
     } catch (err) {
         console.error(err);

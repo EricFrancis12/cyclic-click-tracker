@@ -9,6 +9,7 @@ class Flow {
         if (type === Flow.types.SAVED) {
             throw new Error('Saved Flows are not yet implimented.');
         } else {
+            this.type = Flow.types.BUILT_IN;
             this._id = `${Flow.types.BUILT_IN}_FL`;
             this.defaultPath = Flow.makePath({ landingPages, offers, pathType: Flow.pathTypes.DEFAULT });
             this.rulePaths = [];

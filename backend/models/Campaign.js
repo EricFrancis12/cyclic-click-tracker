@@ -48,33 +48,37 @@ class Campaign {
     }
 
     expand() {
-        const _landingPages = require('../data/landingPages/landingPages').get();
-        const _offers = require('../data/affiliateNetworks/affiliateNetworks').getAllOffers();
-        const _trafficSources = require('../data/trafficSources/trafficSources').get();
+        const landingPages = require('../data/landingPages/landingPages').get();
+        const offers = require('../data/affiliateNetworks/affiliateNetworks').getAllOffers();
+        const trafficSources = require('../data/trafficSources/trafficSources').get();
+        const { defaultPath, rulePaths } = this.flow || {};
+
+        const findAndMapBy_id = (inputItem, array) => {
+            const _id = inputItem._id;
+            const outputItem = array.find(item => item._id === _id);
+
+            if (outputItem) {
+                for (const key in inputItem) {
+                    outputItem[key] = inputItem[key];
+                }
+            }
+
+            return outputItem;
+        }
 
         const result = {
             defaultPath: {
-                landingPages: this.flow.defaultPath.landingPages.map(landingPage => _landingPages.find(_landingPage => _landingPage._id === landingPage._id)),
-                offers: this.flow.defaultPath.offers.map(offer => _offers.find(_offer => _offer._id === offer._id))
+                landingPages: defaultPath?.landingPages.map(landingPage => findAndMapBy_id(landingPage, landingPages)),
+                offers: defaultPath?.offers.map(offer => findAndMapBy_id(offer, offers))
             },
-
-            rulePaths: this.flow?.rulePaths?.map(rulePath => {
-                return {
-                    landingPages: rulePath.landingPages.map(landingPage => _landingPages.find(_landingPage => _landingPage._id === landingPage._id)),
-                    offers: rulePath.offers.map(offer => _offers.find(_offer => _offer._id === offer._id))
-                };
-            }),
-
-            trafficSource: _trafficSources.find(trafficSource => trafficSource._id === this.trafficSource_id)
+            rulePaths: rulePaths?.map(rulePath => ({
+                landingPages: rulePath.landingPages.map(landingPage => findAndMapBy_id(landingPage, landingPages)),
+                offers: rulePath.offers.map(offer => findAndMapBy_id(offer, offers))
+            })),
+            trafficSource: trafficSources.find(trafficSource => trafficSource._id === this.trafficSource_id)
         };
 
         return result;
-
-        // return {
-        //     landingPages: this.landingPages.map(landingPage => _landingPages.find(_landingPage => _landingPage._id === landingPage._id)),
-        //     offers: this.offers.map(offer => _offers.find(_offer => _offer._id === offer._id)),
-        //     trafficSource: _trafficSources.find(trafficSource => trafficSource._id === this.trafficSource_id)
-        // };
     }
 
     handleView(req) {
