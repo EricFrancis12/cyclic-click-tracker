@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "node scripts/preinstall.js && cd frontend && npm i && cd ../",
-    "build": "cd frontend && npm run reactBuild && cd ../ && node scripts/mapFolderStructure.js",
+    "preinstall": "node scripts/preinstall.js",
+    "build": "node scripts/mapFolderStructure.js",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "reactDev": "cd frontend && npm start && cd ../",
