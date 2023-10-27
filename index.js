@@ -17,14 +17,10 @@ app.use(express.static('public'));
 
 app.get('/test', (req, res) => {
     const rootPath = path.join(__dirname);
-    const backendPath = path.join(__dirname, 'backend');
-
-    const backendFolderStructure = mapFolderStructure(backendPath);
     const rootFolderStructure = mapFolderStructure(rootPath);
 
     res.json({
-        rootFolderStructure,
-        backendFolderStructure
+        rootFolderStructure
     });
 
     function mapFolderStructure(dir) {
@@ -62,7 +58,7 @@ routesDirContents.forEach(item => {
 app.use(express.static(path.resolve(__dirname, 'frontend', 'build')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
 });
 
 
