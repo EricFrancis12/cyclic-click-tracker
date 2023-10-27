@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('~~~~~ STARTING MAP FOLDER STRUCTURE ~~~~~');
-Console.LOG(mapFolderStructure(__dirname));
+console.log(mapFolderStructure(__dirname));
 console.log('~~~~~ FINISHED MAP FOLDER STRUCTURE ~~~~~');
 
 
