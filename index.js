@@ -15,7 +15,7 @@ app.use(express.static('public'));
 
 
 
-const routesDirPath = path.resolve(__dirname, './backend/routes');
+const routesDirPath = path.resolve(__dirname, 'backend', 'routes');
 const routesDirContents = fs.readdirSync(routesDirPath);
 routesDirContents.forEach(item => {
     const routePath = `${routesDirPath}/${item}/${item}.js`;
@@ -26,10 +26,10 @@ routesDirContents.forEach(item => {
 
 
 
-app.use(express.static(path.resolve(__dirname, './frontend/build')));
+app.use(express.static(path.resolve(__dirname, 'frontend', 'build')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, './frontend/build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
 });
 
 
