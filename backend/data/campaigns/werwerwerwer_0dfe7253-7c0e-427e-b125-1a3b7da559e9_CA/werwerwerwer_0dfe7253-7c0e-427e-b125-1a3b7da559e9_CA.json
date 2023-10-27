@@ -1,0 +1,30 @@
+{
+    "_id": "werwerwerwer_0dfe7253-7c0e-427e-b125-1a3b7da559e9_CA",
+    "fileName": "werwerwerwer_0dfe7253-7c0e-427e-b125-1a3b7da559e9_CA.json",
+    "timestamp": 1698206929337,
+    "timestampFormatted": "10-24-2023_23_08_49",
+    "name": "werwerwerwer",
+    "trafficSource_id": "zeropark_dfd656f2-db6e-4f1f-92ff-33e5c3064502_TS",
+    "landingPageRotation": "RANDOM",
+    "offerRotation": "RANDOM",
+    "flow": {
+        "type": "BUILT_IN",
+        "defaultPath": {
+            "type": "DEFAULT",
+            "weight": 100,
+            "landingPages": [
+                {
+                    "_id": "DIRECT_LINKING_LP",
+                    "weight": 100
+                }
+            ],
+            "offers": [
+                {
+                    "_id": "cool_offer_9_01bd477e-4f80-495a-9556-7056484950ad_OF",
+                    "weight": 100
+                }
+            ]
+        },
+        "rulePaths": []
+    }
+}

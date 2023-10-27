@@ -1,0 +1,31 @@
+{
+  "name": "cyclic-click-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "node scripts/preinstall.js",
+    "build": "cd frontend && npm run reactBuild && cd ../",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "reactDev": "cd frontend && npm start && cd ../",
+    "create-an": "node scripts/app/affiliateNetworks/create.js",
+    "create-ca": "node scripts/app/campaigns/create.js",
+    "create-lp": "node scripts/app/landingPages/create.js",
+    "create-of": "node scripts/app/offers/create.js",
+    "create-ts": "node scripts/app/trafficSources/create.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cyclic.sh/dynamodb": "^0.0.35",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "inquirer": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
