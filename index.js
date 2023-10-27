@@ -15,6 +15,39 @@ app.use(express.static('public'));
 
 
 
+app.get('/test', (req, res) => {
+    const rootPath = path.join(__dirname);
+    const backendPath = path.join(__dirname, 'backend');
+
+    const backendFolderStructure = mapFolderStructure(backendPath);
+    const rootFolderStructure = mapFolderStructure(rootPath);
+
+    res.json({
+        rootFolderStructure,
+        backendFolderStructure
+    });
+
+    function mapFolderStructure(dir) {
+        const folderStructure = {};
+        const files = fs.readdirSync(dir);
+
+        files.forEach(file => {
+            const filePath = path.join(dir, file);
+            const fileStat = fs.statSync(filePath);
+
+            if (fileStat.isDirectory()) {
+                folderStructure[file] = mapFolderStructure(filePath);
+            } else {
+                folderStructure[file] = 'File';
+            }
+        });
+
+        return folderStructure;
+    }
+});
+
+
+
 const routesDirPath = path.resolve(__dirname, 'backend', 'routes');
 const routesDirContents = fs.readdirSync(routesDirPath);
 routesDirContents.forEach(item => {
