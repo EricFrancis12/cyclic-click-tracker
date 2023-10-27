@@ -3,7 +3,8 @@ const Click = require('../../models/Click');
 const express = require('express');
 const router = express.Router();
 
-const db = require('@cyclic.sh/dynamodb');
+const CyclicDB = require('@cyclic.sh/dynamodb');
+const db = CyclicDB(process.env.CYCLIC_DB);
 
 const campaigns = require('../../data/campaigns/campaigns');
 const landingPages = require('../../data/landingPages/landingPages');

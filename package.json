@@ -8,7 +8,7 @@
     "build": "node scripts/mapFolderStructure.js",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "reactDev": "cd frontend && npm start && cd ../",
+    "reactDev": "cd frontend && npm i && npm start && cd ../",
     "create-an": "node scripts/app/affiliateNetworks/create.js",
     "create-ca": "node scripts/app/campaigns/create.js",
     "create-lp": "node scripts/app/landingPages/create.js",

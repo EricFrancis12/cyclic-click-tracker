@@ -3,10 +3,11 @@ const Offer = require('../../models/Offer');
 const express = require('express');
 const router = express.Router();
 
-const db = require('@cyclic.sh/dynamodb');
+const CyclicDB = require('@cyclic.sh/dynamodb');
+const db = CyclicDB(process.env.CYCLIC_DB);
 
 const campaigns = require('../../data/campaigns/campaigns');
-const { randomlySelectItem } = require('../../utils/utils');
+const { randomlySelectItem, weightedRandomlySelectItem } = require('../../utils/utils');
 
 
 
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     if (campaign_id) campaign = campaigns.find(campaign => campaign._id === campaign_id);
 
     if (campaign.offerRotation === Offer.rotationOptions.RANDOM) {
-        const offer_id = randomlySelectItem(campaign.offers)._id;
+        const offer_id = weightedRandomlySelectItem(campaign.offers)._id;
         offer = require('../../data/affiliateNetworks/affiliateNetworks').getAllOffers().find(_offer => _offer._id === offer_id);
 
         if (offer) clickRedirectUrl = offer.url;

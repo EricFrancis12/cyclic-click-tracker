@@ -8,7 +8,7 @@ const path = require('path');
 
 const inquirer = require('inquirer');
 
-const { arrayFromObject, formatTime, removeIllegalChars, randomlySelectItem } = require('../utils/utils');
+const { arrayFromObject, formatTime, removeIllegalChars, randomlySelectItem, weightedRandomlySelectItem } = require('../utils/utils');
 
 
 
@@ -99,13 +99,13 @@ class Campaign {
         let viewRedirectUrl, isDirectLink, landingPage, offer;
 
         if (this.landingPageRotation === LandingPage.rotationOptions.RANDOM) {
-            landingPage = randomlySelectItem(path.landingPages);
+            landingPage = weightedRandomlySelectItem(path.landingPages);
         } else {
             throw new Error('Other landing page rotation options not implimented yet.')
         }
 
         if (landingPage?._id === LandingPage.DIRECT_LINKING_LP._id) {
-            offer = randomlySelectItem(path.offers);
+            offer = weightedRandomlySelectItem(path.offers);
 
             viewRedirectUrl = offer.url;
             isDirectLink = true;

@@ -15,6 +15,21 @@ function randomlySelectItem(array) {
     return array[randomIndex];
 }
 
+function weightedRandomlySelectItem(array) {
+    const totalWeight = array.reduce((total, currentItem) => total + currentItem.weight, 0);
+    let randomNum = Math.floor(Math.random() * totalWeight);
+
+    for (let i = 0; i < array.length; i++) {
+        randomNum -= array[i].weight;
+        if (randomNum < 0) {
+            return array[i];
+        }
+    }
+
+    // If for some reason no item was selected, return null or handle it as needed
+    return null;
+}
+
 function formatTime(timestamp = Date.now()) {
     const date = new Date(timestamp);
 
@@ -41,6 +56,7 @@ function extractUuid(_id) {
 
 module.exports = {
     arrayFromObject,
+    weightedRandomlySelectItem,
     randomlySelectItem,
     formatTime,
     removeIllegalChars,
