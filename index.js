@@ -19,9 +19,7 @@ app.get('/test', (req, res) => {
     const rootPath = path.join(__dirname);
     const rootFolderStructure = mapFolderStructure(rootPath);
 
-    res.json({
-        rootFolderStructure
-    });
+    res.json(rootFolderStructure);
 
     function mapFolderStructure(dir) {
         const folderStructure = {};
