@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "node scripts/preinstall.js",
+    "preinstall": "node scripts/preinstall.js && cd frontend && npm i && cd ../",
     "build": "cd frontend && npm run reactBuild && cd ../",
     "start": "node index.js",
     "dev": "nodemon index.js",
