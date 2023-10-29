@@ -1,5 +1,22 @@
 
 
+export function isNil(any) {
+    return any === null || any === undefined;
+}
+
+export function isEmpty(any) {
+    return isNil(any) || any === '';
+}
+
+export function isNonsense(any) {
+    return isEmpty(any) || isNaN(any) || any === Infinity;
+}
+
+export function replaceNonsense(any, replacement = 0) {
+    if (isNonsense(any)) return replacement;
+    return any;
+}
+
 export function makeDate(year, month, day, hour, min, sec, ms) {
     const date = new Date();
     date.setUTCFullYear(year, month, day); // year, month (0-11), day

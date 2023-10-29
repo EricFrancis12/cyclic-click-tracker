@@ -5,14 +5,16 @@ import ReportButton from './ReportButton';
 import ReportChain from './ReportChain';
 
 export default function LowerControlPanel(props) {
-    const { timeframe, setTimeframe, newReport } = props;
+    const { activeItemName, newReport, timeframe, setTimeframe } = props;
 
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
         <div className='flex flex-col justify-center align-start w-full bg-LowerConrolPanel_backgroundColor'
             style={{ borderTop: 'solid lightgrey 3px' }}>
-            <ReportChain />
+            <div className='flex flex-wrap gap-6 mx-8 my-4 w-full'>
+                <ReportChain />
+            </div>
             <div className='flex flex-wrap gap-6 mx-8 my-4 w-full'>
                 <div className='flex gap-2 justify-center items-center'>
                     <CalendarButton timeframe={timeframe} setTimeframe={setTimeframe} />

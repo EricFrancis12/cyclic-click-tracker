@@ -8,7 +8,6 @@
     "commit": "git add . && git commit -m \"data commit\" && git push origin main",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "dbAuth": "SET AWS_REGION=us-east-2 && SET AWS_ACCESS_KEY_ID=ASIAQ4NEU6WWVKZ2EAPE && SET AWS_SECRET_ACCESS_KEY=XDos4yftQ7Bi49p1Ii/Y5LM8UYULuF0QHUVssZ76 && SET AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEIr//////////wEaCXVzLWVhc3QtMiJGMEQCIC2IiuNsT3Lc8ZNa0ovuYn4pz+QzjGfMnI6VS3doAH+VAiBUr07oze5iPxb1wcCOEMloGz/RMzU8X/Ur25smSQGveiq4Agiz//////////8BEAAaDDA2MTAxMTcxOTU5NyIMpl0uQlzgQVkxsYUtKowCwGgFSThIla3gTc+iYgXXHu1Qbyt3ho5sb6Uz1kb1Kgf2/GbkBKKOOriEE+3IIT0TzKzoLPEpXoUI58IR0gUjusL8cajH957l/LSCxLYqO5l0IsHdGm9sIxhgYaTd3J30fopOqU9GBsO2LvNKmcPvfmvWmBTEbc5QHNoYNwiBSBpoU2YlAjHxsxBWgng/rj2N921BX/AsHHNBHmt+CZLesUNiQ0aVP1NhVEEAd7m2pkEQb6KVV6j4Wj7bT5Rk1waxC46zyEASRztf/cHgRy03Oh0PR81VGjnc+iLHIppulUeydvIID2Z6ZkE/ObYmSPp4x7XsScyGQuZLwH2xF0kzj7C2BuA0CyIBaOqV8DDOgPepBjqeAYaP/Le2ZAv+MwD3PLlmcVzq+zMpAQkIzf5WCUdRFyp+kWEPamrk4d0nttSzLMhDM/QNyXtx0HxbtC80Ywy7ZX+0Ho7eyGLRGARUCf0Kp9roy7IsLrpTb8u/NpW1mAuRuteBQ/lGvBTv9Ac72bWNtKYz9aZ1T+93fNPKXaeBh0pLN6EIRTd9RQEHft0mLXyVO/jdNLuqRh+xqxq9f1oK",
     "reactDev": "cd frontend && npm i && npm start && cd ../",
     "reactBuild": "cd frontend && npm run build && cd ../",
     "create-an": "node scripts/app/affiliateNetworks/create.js",

@@ -15,21 +15,14 @@ router.get('/', auth, async (req, res) => {
     try {
         const clicksCollection = db.collection('clicks');
 
-        console.log(clicksCollection);
-        console.log(await clicksCollection.filter());
+        const dbResults = await clicksCollection.filter();
+        if (!dbResults) return res.status(400).json({ success: false, message: 'Error fetching clicks' });
 
-        const results = await clicksCollection.filter();
-
-        console.log(results);
-
-        if (!results) return res.status(400).json({ success: false, message: 'Error fetching clicks' });
-
-        const clicks = results.results.map(result => result.props);
+        const clicks = dbResults.results.map(result => result.props);
 
         res.status(200).json({
             success: true,
-            data: clicks,
-            results
+            data: clicks
         });
     } catch (err) {
         console.error(`Error fetching clicks: ${err}`);
@@ -41,8 +34,11 @@ router.get('/:click_id', auth, async (req, res) => {
     try {
         // get a specific click in db
         const clicksCollection = db.collection('clicks');
-        const results = await clicksCollection.filter().results;
-        const click = results.find(result => result.props._id === req.params.click_id)?.props;
+
+        const dbResults = await clicksCollection.filter();
+        if (!dbResults) return res.status(400).json({ success: false, message: 'Error fetching clicks' });
+
+        const click = dbResults.results.find(result => result.props._id === req.params.click_id)?.props;
 
         if (!click) return res.status(404).json({ success: false, message: 'Click not found.' });
 
