@@ -14,8 +14,14 @@ router.get('/', auth, async (req, res) => {
     // get all clicks in db
     try {
         const clicksCollection = db.collection('clicks');
+
+        console.log(clicksCollection);
+        console.log(clicksCollection.filter());
+
         const results = await clicksCollection.filter().results;
+
         console.log(results);
+
         const clicks = results?.map(result => result.props) ?? [];
 
         res.status(200).json({
