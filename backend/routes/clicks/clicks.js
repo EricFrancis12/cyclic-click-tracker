@@ -18,15 +18,18 @@ router.get('/', auth, async (req, res) => {
         console.log(clicksCollection);
         console.log(await clicksCollection.filter());
 
-        const results = await clicksCollection.filter().results;
+        const results = await clicksCollection.filter();
 
         console.log(results);
 
-        const clicks = results?.map(result => result.props) ?? [];
+        if (!results) return res.status(400).json({ success: false, message: 'Error fetching clicks' });
+
+        const clicks = results.results.map(result => result.props);
 
         res.status(200).json({
             success: true,
-            data: clicks
+            data: clicks,
+            results
         });
     } catch (err) {
         console.error(`Error fetching clicks: ${err}`);
