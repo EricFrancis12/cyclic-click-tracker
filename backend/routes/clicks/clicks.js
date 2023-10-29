@@ -16,7 +16,7 @@ router.get('/', auth, async (req, res) => {
         const clicksCollection = db.collection('clicks');
 
         console.log(clicksCollection);
-        console.log(clicksCollection.filter());
+        console.log(await clicksCollection.filter());
 
         const results = await clicksCollection.filter().results;
 
