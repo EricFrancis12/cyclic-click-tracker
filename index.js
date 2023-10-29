@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
@@ -7,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const express = require('express');
 const app = express();
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET, { signed: true, httpOnly: false }));
