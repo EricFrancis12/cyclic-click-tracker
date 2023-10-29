@@ -15,7 +15,8 @@ router.get('/', auth, async (req, res) => {
     try {
         const clicksCollection = db.collection('clicks');
         const results = await clicksCollection.filter().results;
-        const clicks = results.map(result => result.props) ?? [];
+        console.log(results);
+        const clicks = results?.map(result => result.props) ?? [];
 
         res.status(200).json({
             success: true,
