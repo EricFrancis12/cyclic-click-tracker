@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react'
-import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,20 +27,15 @@ export default function Login() {
     }
 
     return (
-        <>
-            <Card>
-                <Card.Body>
-                    <h2 className='text-center mb-4'>Log In</h2>
-                    {error && <Alert variant='danger'>{error}</Alert>}
-                    <Form onSubmit={e => handleSubmit(e)}>
-                        <Form.Group id='password'>
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type='password' ref={passwordRef} required />
-                        </Form.Group>
-                        <Button disabled={loading} className='w-100 mt-4' type='submit'>Log In</Button>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </>
+        <div>
+            <h2 className='text-center mb-4'>Log In</h2>
+            {error && <div>{error}</div>}
+            <form onSubmit={e => handleSubmit(e)}>
+                <label htmlFor='password'>Password
+                    <input type='password' id='password' ref={passwordRef} required></input>
+                </label>
+                {!loading && <button className='w-100 mt-4' type='submit'>Log In</button>}
+            </form>
+        </div>
     )
 }

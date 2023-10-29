@@ -3,7 +3,7 @@ const path = require('path');
 
 const inquirer = require('inquirer');
 
-const { formatTime, removeIllegalChars, extractUuid } = require('../utils/utils');
+const { formatTime, removeIllegalChars, extract_uuid } = require('../utils/utils');
 
 
 
@@ -12,7 +12,7 @@ class Offer {
         const { name, affiliateNetwork, url = '', appendDefaultNewOfferString = false, payout = 0, jsonData } = props;
 
         if (!jsonData) {
-            const uuid = extractUuid(affiliateNetwork._id);
+            const uuid = extract_uuid(affiliateNetwork._id);
 
             this._id = `${removeIllegalChars(name)}_${uuid}_OF`;
             this.fileName = `${this._id}.json`;

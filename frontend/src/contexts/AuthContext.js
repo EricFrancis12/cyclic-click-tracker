@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
+import { DISABLE_AUTH } from '../layouts/AuthLayout';
 
 const AuthContext = React.createContext();
 
@@ -10,6 +11,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const [loggedIn, setLoggedIn] = useState(Cookies.get('loggedIn') === 'true' ? true : false);
     const [data, setData] = useState([]);
+    const [clicks, setClicks] = useState([]);
 
     const fetchingData = useRef(false);
 
@@ -18,27 +20,55 @@ export function AuthProvider({ children }) {
     }, [loggedIn]);
 
     function fetchData() {
-        if (loggedIn && !fetchingData.current) {
+        if ((loggedIn && !fetchingData.current) || DISABLE_AUTH === true) {
             fetchingData.current = true;
 
-            fetch('/data')
-                .then(async (res) => {
-                    if (res.status === 401) {
-                        setData([]);
-                        setLoggedIn(false);
-                        return;
-                    }
+            const _finally = () => {
+                if (fetchData.count < 2) {
+                    fetchData.count = 1;
+                } else {
+                    fetchData.count++;
+                }
 
-                    const resJson = await res.json();
-
-                    if (resJson.data) {
-                        setData(resJson.data);
-                    }
-                }).catch(err => {
-                    console.error(err);
-                }).finally(() => {
+                if (fetchData.count === 2) {
                     fetchingData.current = false;
-                });
+                    fetchData.count = undefined;
+                }
+            };
+
+            fetch('/data').then(async (res) => {
+                if (res.status === 401) {
+                    setData([]);
+                    setLoggedIn(false);
+                    return;
+                }
+
+                const resJson = await res.json();
+
+                if (resJson.data) {
+                    setData(resJson.data);
+                }
+            }).catch(err => {
+                console.error(err);
+            }).finally(_finally);
+
+            fetch(`${process.env.REACT_APP_CYCLIC_URL}/clicks`, {
+                headers: {
+                    'Authorization': `Bearer ${process.env.REACT_APP_AUTHORIZATION}`
+                }
+            }).then(async (res) => {
+                if (res.status === 401) {
+                    return;
+                }
+
+                const resJson = await res.json();
+
+                if (resJson.data) {
+                    setClicks(resJson.data);
+                }
+            }).catch(err => {
+                console.error(err);
+            }).finally(_finally);
         }
     }
 
@@ -82,6 +112,7 @@ export function AuthProvider({ children }) {
 
     const value = {
         data,
+        clicks,
         loggedIn,
         login,
         logout,

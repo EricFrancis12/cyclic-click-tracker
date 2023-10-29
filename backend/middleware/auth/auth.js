@@ -1,7 +1,7 @@
 
 
 async function auth(req, res, next) {
-    if (process.env.DISABLE_AUTH.toLowerCase() === 'true') next();
+    if (process.env.DISABLE_AUTH?.toLowerCase() === 'true') next();
 
     const authorized = await authorize(req);
 
@@ -15,7 +15,12 @@ async function auth(req, res, next) {
 
 
 async function authorize(req) {
-    if (req.signedCookies.loggedIn === process.env.LOGGED_IN_SECRET) {
+    const cookieSecretPresent = req.signedCookies.loggedIn === process.env.LOGGED_IN_SECRET;
+    
+    const authToken = req.header('Authorization')?.split('.')?.pop();
+    const correctBearerAuth = authToken === process.env.AUTHORIZATION || authToken === process.env.PASSWORD;
+
+    if (cookieSecretPresent || correctBearerAuth) {
         return true;
     }
 
