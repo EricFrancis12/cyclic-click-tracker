@@ -95,6 +95,8 @@ export default function DataTable(props) {
         }
     ];
 
+    console.log(mappedData);
+
     return (
         <div style={{ height: '100vh', width: '100vw', backgroundColor: 'blue' }}>
             <div className={`grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-scroll`} style={{ backgroundColor: 'red' }}>

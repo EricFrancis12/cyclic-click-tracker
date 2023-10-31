@@ -38,17 +38,17 @@ export const ITEM_TYPES = {
 };
 
 export const ITEMS = [
-    { name: ITEM_NAMES.CAMPAIGNS, type: ITEM_TYPES.BUTTON, icon: faBullseye, dataKey: 'campaigns' },
-    { name: ITEM_NAMES.OFFERS, type: ITEM_TYPES.BUTTON, icon: faHandshake, dataKey: 'offers' },
-    { name: ITEM_NAMES.LANDING_PAGES, type: ITEM_TYPES.BUTTON, icon: faFolder, dataKey: 'landingPages' },
-    { name: ITEM_NAMES.FLOWS, type: ITEM_TYPES.BUTTON, icon: faSitemap, dataKey: 'flows' },
-    { name: ITEM_NAMES.TRAFFIC_SOURCES, type: ITEM_TYPES.BUTTON, icon: faGlobe, dataKey: 'trafficSources' },
-    { name: ITEM_NAMES.AFFILIATE_NETWORKS, type: ITEM_TYPES.BUTTON, icon: faUsers, dataKey: 'affiliateNetworks' },
+    { name: ITEM_NAMES.CAMPAIGNS, type: ITEM_TYPES.BUTTON, icon: faBullseye, dataKey: 'campaign_id' },
+    { name: ITEM_NAMES.OFFERS, type: ITEM_TYPES.BUTTON, icon: faHandshake, dataKey: 'offer_id' },
+    { name: ITEM_NAMES.LANDING_PAGES, type: ITEM_TYPES.BUTTON, icon: faFolder, dataKey: 'landingPage_id' },
+    { name: ITEM_NAMES.FLOWS, type: ITEM_TYPES.BUTTON, icon: faSitemap, dataKey: 'flow_id' },
+    { name: ITEM_NAMES.TRAFFIC_SOURCES, type: ITEM_TYPES.BUTTON, icon: faGlobe, dataKey: 'trafficSource_id' },
+    { name: ITEM_NAMES.AFFILIATE_NETWORKS, type: ITEM_TYPES.BUTTON, icon: faUsers, dataKey: 'affiliateNetwork_id' },
     { name: ITEM_NAMES.CONVERSIONS, type: ITEM_TYPES.BUTTON, icon: faDollarSign },
     { name: ITEM_NAMES.POSTBACKS, type: ITEM_TYPES.BUTTON, icon: faDownload },
     {
         defaultName: ITEM_NAMES.COUNTRIES, type: ITEM_TYPES.DROPDOWN, icon: faGlobeEurope, dropdownItems: [
-            { name: ITEM_NAMES.LANGUAGES, icon: faGlobeEurope },
+            { name: ITEM_NAMES.LANGUAGES, icon: faGlobeEurope, dataKey: 'language' },
             { name: ITEM_NAMES.CITIES, icon: faGlobeEurope },
             { name: ITEM_NAMES.STATE_REGION, icon: faGlobeEurope },
             { name: ITEM_NAMES.COUNTRIES, icon: faGlobeEurope }
@@ -77,7 +77,6 @@ export const ITEMS = [
     },
     {
         defaultName: ITEM_NAMES.BROWSERS, type: ITEM_TYPES.DROPDOWN, icon: faFolder, dropdownItems: [
-            { name: ITEM_NAMES.BROWSERS, icon: faFolder },
             { name: ITEM_NAMES.BROWSER_NAMES, icon: faFolder },
             { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder }
         ]

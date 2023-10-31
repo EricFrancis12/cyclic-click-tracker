@@ -3,6 +3,7 @@ const TrafficSource = require('./TrafficSource');
 const crypto = require('crypto');
 
 const campaigns = require('../data/campaigns/campaigns');
+const { UNKNOWN } = require('../../frontend/src/config/config.json').terms;
 
 
 
@@ -40,12 +41,31 @@ class Click {
 
         this.tokens = tokens || [];
 
-        this.ip = req.ip;
-        this.userAgent = req.headers['user-agent'];
-        // other server-detected data can be assigned to the click here...
-
         this.viewRedirectUrl = viewRedirectUrl;
         this.clickRedirectUrl = isDirectLink ? this.viewRedirectUrl : null;
+
+        this.language = req.headers['accept-language'] ?? req.lang ?? UNKNOWN;
+        this.city = null ?? UNKNOWN;
+        this.region = null ?? UNKNOWN;
+        this.country = null ?? UNKNOWN;
+
+        this.isp = null ?? UNKNOWN;
+        this.carriers = null ?? UNKNOWN;
+        this.connectionType = null ?? UNKNOWN;
+
+        this.deviceModel = null ?? UNKNOWN;
+        this.deviceVendor = null ?? UNKNOWN;
+        this.deviceType = null ?? UNKNOWN;
+        this.screenResolution = null ?? UNKNOWN;
+
+        this.os = null ?? UNKNOWN;
+        this.osVersion = null ?? UNKNOWN;
+
+        this.browserName = null ?? UNKNOWN;
+        this.browserVersion = null ?? UNKNOWN;
+
+        this.ip = req.ip ?? UNKNOWN;
+        this.userAgent = req.headers['user-agent'] ?? UNKNOWN;
     }
 
     recordClick(props) {

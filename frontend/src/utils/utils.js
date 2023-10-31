@@ -59,3 +59,7 @@ export function arrayIncludesKeyValuePair(array, key, value) {
     if (!array) return false;
     return array.find(item => item[key] === value) !== undefined
 }
+
+export function extract_uuid(_id) {
+    return _id.split('_').at(-2);
+}
