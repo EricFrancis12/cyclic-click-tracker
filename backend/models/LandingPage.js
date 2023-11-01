@@ -5,6 +5,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars } = require('../utils/utils');
+const { LP } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -13,7 +14,7 @@ class LandingPage {
         const { name, url = '', _id, jsonData } = props;
 
         if (!jsonData) {
-            this._id = _id || `${removeIllegalChars(name)}_${crypto.randomUUID()}_LP`;
+            this._id = _id || `${removeIllegalChars(name)}_${crypto.randomUUID()}_${LP}`;
             this.fileName = `${this._id}.json`;
             this.timestamp = Date.now();
             this.timestampFormatted = formatTime(this.timestamp);
@@ -71,7 +72,7 @@ LandingPage.rotationOptions = {
 LandingPage.DIRECT_LINKING_LP = {
     name: 'Direct Linking',
     url: '',
-    _id: 'DIRECT_LINKING_LP'
+    _id: `DIRECT_LINKING_${LP}`
 };
 
 

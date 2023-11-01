@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Dropdown from '../components/Dropdown';
 
 export default function useHoverDropdown(id) {
     const [isHovered, setIsHovered] = useState(false);
@@ -32,23 +33,6 @@ export default function useHoverDropdown(id) {
             if (dropdownRef.current) dropdownRef.current.removeEventListener('mouseleave', handleMouseExit);
         }
     }
-
-    function Dropdown({ children }) {
-        return (
-            <div className='bg-green-500'
-                ref={dropdownRef}
-                id={dropdownId.current}
-                style={{
-                    position: 'absolute',
-                    display: isHovered ? 'block' : 'none',
-                    zIndex: 999,
-                    width: 'auto'
-                }}
-            >
-                {children}
-            </div>
-        )
-    };
 
     useEffect(() => {
         const targetElement = document.getElementById(id);

@@ -5,6 +5,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars } = require('../utils/utils');
+const { AN } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -13,7 +14,7 @@ class AffiliateNetwork {
         const { name, defaultNewOfferString = '&REPLACE={click_id}', jsonData } = props;
 
         if (!jsonData) {
-            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_AN`;
+            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${AN}`;
             this.fileName = `${this._id}.json`;
             this.timestamp = Date.now();
             this.timestampFormatted = formatTime(this.timestamp);

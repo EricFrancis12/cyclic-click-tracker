@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import Calendar from 'react-calendar';
 import { traverseParentsForClass, makeDate, formatDatesRange } from '../../utils/utils';
 
 export const CALENDAR_BUTTON_CLASS = 'CALENDAR_BUTTON_CLASS';
+export const CALENDAR_APPLY_BUTTON_CLASS = 'CALENDAR_APPLY_BUTTON_CLASS';
 
 export const ONE_DAY_MS = 86_400_000;
 export const ONE_DAY_DIFF_MS = ONE_DAY_MS - 1;
@@ -22,9 +23,9 @@ export const TIMEFRAME_TYPE_NAMES = {
     DATE_RANGE: 'Date Range'
 };
 
-const DEFAULT_TIMEFRAME_TYPE_NAME = TIMEFRAME_TYPE_NAMES.LAST_7_DAYS;
+export const DEFAULT_TIMEFRAME_TYPE_NAME = TIMEFRAME_TYPE_NAMES.LAST_7_DAYS;
 
-function getDates(name) {
+export function getDates(name) {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -92,14 +93,22 @@ export default function ToggleButton(props) {
     const [active, setActive] = useState(false);
     const [calendarValue, setCalendarValue] = useState(timeframe ?? getDates(DEFAULT_TIMEFRAME_TYPE_NAME));
 
-    const [activeTimeframeTypeName, setActiveTimeframeTypeName] = useState();
+    const [activeTimeframeTypeName, setActiveTimeframeTypeName] = useState(DEFAULT_TIMEFRAME_TYPE_NAME);
+    const originalActiveTimeframeTypeName = useRef(activeTimeframeTypeName);
 
     useEffect(() => {
         if (timeframe == null && calendarValue != null) {
             setTimeframe(calendarValue);
             setActiveTimeframeTypeName(DEFAULT_TIMEFRAME_TYPE_NAME);
+            originalActiveTimeframeTypeName.current = DEFAULT_TIMEFRAME_TYPE_NAME;
         }
     }, [timeframe]);
+
+    useEffect(() => {
+        if (active === false) {
+            originalActiveTimeframeTypeName.current = activeTimeframeTypeName;
+        }
+    }, [active]);
 
     const timeframeTypes = [
         {
@@ -185,7 +194,8 @@ export default function ToggleButton(props) {
             return;
         }
 
-        if (!traverseParentsForClass(e.target, CALENDAR_BUTTON_CLASS)) {
+        if (!traverseParentsForClass(e.target, CALENDAR_BUTTON_CLASS) && !e.target.classList.contains(CALENDAR_APPLY_BUTTON_CLASS)) {
+            console.log('handling cancel');
             handleCancel();
         }
     }
@@ -202,6 +212,8 @@ export default function ToggleButton(props) {
     function handleCancel() {
         setActive(false);
         setCalendarValue(timeframe ?? getDates(DEFAULT_TIMEFRAME_TYPE_NAME));
+        setActiveTimeframeTypeName(originalActiveTimeframeTypeName.current);
+
         document.removeEventListener('click', handleGlobalClick);
     }
 
@@ -252,7 +264,7 @@ export default function ToggleButton(props) {
                         <div />
                         <div className='flex justify-end gap-2 px-2'>
                             <button onClick={e => handleCancel()}>Cancel</button>
-                            <button onClick={e => handleApply()}>Apply</button>
+                            <button onClick={e => handleApply()} className={CALENDAR_APPLY_BUTTON_CLASS}>Apply</button>
                         </div>
                     </div>
                 </div>

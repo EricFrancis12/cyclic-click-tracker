@@ -1,3 +1,5 @@
+const { FL } = require('../../frontend/src/config/config.json').suffixes;
+
 
 
 class Flow {
@@ -10,7 +12,7 @@ class Flow {
             throw new Error('Saved Flows are not yet implimented.');
         } else {
             this.type = Flow.types.BUILT_IN;
-            this._id = `${Flow.types.BUILT_IN}_FL`;
+            this._id = `${Flow.types.BUILT_IN}_${FL}`;
             this.defaultPath = Flow.makePath({ landingPages, offers, pathType: Flow.pathTypes.DEFAULT });
             this.rulePaths = [];
         }

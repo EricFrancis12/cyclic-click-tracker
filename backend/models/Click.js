@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 const campaigns = require('../data/campaigns/campaigns');
 const { UNKNOWN } = require('../../frontend/src/config/config.json').terms;
+const { CLK } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -23,7 +24,7 @@ class Click {
         this.viewTimestamp = timestamp;
 
         this.campaign_id = campaign._id;
-        this._id = `${crypto.randomUUID()}_${campaign._id}_CLK`;
+        this._id = `${crypto.randomUUID()}_${campaign._id}_${CLK}`;
 
         this.landingPage_id = landingPage?._id || null;
         this.offer_id = offer?._id || null;

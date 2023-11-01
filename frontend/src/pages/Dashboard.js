@@ -11,7 +11,7 @@ export default function Dashboard() {
 
     const defaultViews = [
         { type: DashboardView, _id: 0 },
-        { type: HomeView, _id: 1, props: { newReport } }
+        { type: HomeView, _id: 1, props: { newReport, newItem, editItem, duplicateItem, archiveItem } }
     ];
 
     const [spawnedViews, setSpawnedViews] = useState([]);
@@ -27,14 +27,31 @@ export default function Dashboard() {
     }
 
     function newReport(props) {
+        const _props = { ...props, newItem };
         const reportView = {
-            props,
+            props: _props,
             type: ReportView,
             _id: crypto.randomUUID()
         };
 
         setSpawnedViews(currentSpawnedViews => [...currentSpawnedViews, reportView]);
         setActiveView_id(reportView._id);
+    }
+
+    function newItem(props) {
+        console.log('newItem() not yet implimented');
+    }
+
+    function editItem(props) {
+        console.log('editItem() not yet implimented');
+    }
+
+    function duplicateItem(props) {
+        console.log('duplicateItem() not yet implimented');
+    }
+
+    function archiveItem(props) {
+        console.log('archiveItem() not yet implimented');
     }
 
     return (

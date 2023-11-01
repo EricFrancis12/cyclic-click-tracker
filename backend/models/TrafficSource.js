@@ -5,6 +5,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars } = require('../utils/utils');
+const { TS } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -13,7 +14,7 @@ class TrafficSource {
         const { name, postbackUrl = '', tokens = [], jsonData } = props;
 
         if (!jsonData) {
-            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_TS`;
+            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${TS}`;
             this.fileName = `${this._id}.json`;
             this.timestamp = Date.now();
             this.timestampFormatted = formatTime(this.timestamp);

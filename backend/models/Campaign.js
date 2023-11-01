@@ -9,6 +9,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { arrayFromObject, formatTime, removeIllegalChars, weightedRandomlySelectItem, extract_uuid } = require('../utils/utils');
+const { CA } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -17,7 +18,7 @@ class Campaign {
         const { name, trafficSource, landingPageRotation, offerRotation, flow, jsonData } = props;
 
         if (!jsonData) {
-            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_CA`;
+            this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${CA}`;
             this.fileName = `${this._id}.json`;
             this.timestamp = Date.now();
             this.timestampFormatted = formatTime(this.timestamp);

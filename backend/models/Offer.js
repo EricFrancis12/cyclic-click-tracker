@@ -4,6 +4,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars, extract_uuid } = require('../utils/utils');
+const { OF } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
@@ -14,7 +15,7 @@ class Offer {
         if (!jsonData) {
             const uuid = extract_uuid(affiliateNetwork._id);
 
-            this._id = `${removeIllegalChars(name)}_${uuid}_OF`;
+            this._id = `${removeIllegalChars(name)}_${uuid}_${OF}`;
             this.fileName = `${this._id}.json`;
             this.timestamp = Date.now();
             this.timestampFormatted = formatTime(this.timestamp);
@@ -29,11 +30,6 @@ class Offer {
             this.payout = parseFloat(payout) >= 0
                 ? parseFloat(payout.toFixed(2))
                 : 0;
-
-                console.log(payout);
-                console.log(typeof payout);
-                console.log(this.payout);
-                console.log(typeof this.payout);
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];

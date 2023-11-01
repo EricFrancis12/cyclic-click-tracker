@@ -15,7 +15,7 @@ export const ITEM_NAMES = {
     COUNTRIES: 'Countries',
     LANGUAGES: 'Languages',
     CITIES: 'Cities',
-    STATE_REGION: 'State / Region',
+    STATE_REGION: 'States / Regions',
     ISP: 'ISP',
     MOBILE_CARRIERS: 'Mobile Carriers',
     CONNECTION_TYPES: 'Connection Types',
@@ -38,59 +38,59 @@ export const ITEM_TYPES = {
 };
 
 export const ITEMS = [
-    { name: ITEM_NAMES.CAMPAIGNS, type: ITEM_TYPES.BUTTON, icon: faBullseye, dataKey: 'campaign_id' },
-    { name: ITEM_NAMES.OFFERS, type: ITEM_TYPES.BUTTON, icon: faHandshake, dataKey: 'offer_id' },
-    { name: ITEM_NAMES.LANDING_PAGES, type: ITEM_TYPES.BUTTON, icon: faFolder, dataKey: 'landingPage_id' },
-    { name: ITEM_NAMES.FLOWS, type: ITEM_TYPES.BUTTON, icon: faSitemap, dataKey: 'flow_id' },
-    { name: ITEM_NAMES.TRAFFIC_SOURCES, type: ITEM_TYPES.BUTTON, icon: faGlobe, dataKey: 'trafficSource_id' },
-    { name: ITEM_NAMES.AFFILIATE_NETWORKS, type: ITEM_TYPES.BUTTON, icon: faUsers, dataKey: 'affiliateNetwork_id' },
-    { name: ITEM_NAMES.CONVERSIONS, type: ITEM_TYPES.BUTTON, icon: faDollarSign },
-    { name: ITEM_NAMES.POSTBACKS, type: ITEM_TYPES.BUTTON, icon: faDownload },
+    { name: ITEM_NAMES.CAMPAIGNS, type: ITEM_TYPES.BUTTON, icon: faBullseye, saved: true, dataProp: 'campaigns', clickProp: 'campaign_id', singName: 'Campaign' },
+    { name: ITEM_NAMES.OFFERS, type: ITEM_TYPES.BUTTON, icon: faHandshake, saved: true, dataProp: 'offers', clickProp: 'offer_id', singName: 'Offer' },
+    { name: ITEM_NAMES.LANDING_PAGES, type: ITEM_TYPES.BUTTON, icon: faFolder, saved: true, dataProp: 'landingPages', clickProp: 'landingPage_id', singName: 'Landing Page' },
+    { name: ITEM_NAMES.FLOWS, type: ITEM_TYPES.BUTTON, icon: faSitemap, saved: true, dataProp: 'flows', clickProp: 'flow_id', singName: 'Flow' },
+    { name: ITEM_NAMES.TRAFFIC_SOURCES, type: ITEM_TYPES.BUTTON, icon: faGlobe, saved: true, dataProp: 'trafficSources', clickProp: 'trafficSource_id', singName: 'Traffic Source' },
+    { name: ITEM_NAMES.AFFILIATE_NETWORKS, type: ITEM_TYPES.BUTTON, icon: faUsers, saved: true, dataProp: 'affiliateNetworks', clickProp: 'affiliateNetwork_id', singName: 'Affiliate Network' },
+    { name: ITEM_NAMES.CONVERSIONS, type: ITEM_TYPES.BUTTON, icon: faDollarSign, saved: false },
+    { name: ITEM_NAMES.POSTBACKS, type: ITEM_TYPES.BUTTON, icon: faDownload, saved: false },
     {
         defaultName: ITEM_NAMES.COUNTRIES, type: ITEM_TYPES.DROPDOWN, icon: faGlobeEurope, dropdownItems: [
-            { name: ITEM_NAMES.LANGUAGES, icon: faGlobeEurope, dataKey: 'language' },
-            { name: ITEM_NAMES.CITIES, icon: faGlobeEurope },
-            { name: ITEM_NAMES.STATE_REGION, icon: faGlobeEurope },
-            { name: ITEM_NAMES.COUNTRIES, icon: faGlobeEurope }
+            { name: ITEM_NAMES.LANGUAGES, icon: faGlobeEurope, saved: false, clickProp: 'language' },
+            { name: ITEM_NAMES.CITIES, icon: faGlobeEurope, saved: false },
+            { name: ITEM_NAMES.STATE_REGION, icon: faGlobeEurope, saved: false },
+            { name: ITEM_NAMES.COUNTRIES, icon: faGlobeEurope, saved: false }
         ]
     },
     {
         defaultName: ITEM_NAMES.ISP, type: ITEM_TYPES.DROPDOWN, icon: faWifi, dropdownItems: [
-            { name: ITEM_NAMES.ISP, icon: faWifi },
-            { name: ITEM_NAMES.MOBILE_CARRIERS, icon: faWifi },
-            { name: ITEM_NAMES.CONNECTION_TYPES, icon: faWifi },
+            { name: ITEM_NAMES.ISP, icon: faWifi, saved: false },
+            { name: ITEM_NAMES.MOBILE_CARRIERS, icon: faWifi, saved: false },
+            { name: ITEM_NAMES.CONNECTION_TYPES, icon: faWifi, saved: false },
         ]
     },
     {
         defaultName: ITEM_NAMES.DEVICES, type: ITEM_TYPES.DROPDOWN, icon: faLaptop, dropdownItems: [
-            { name: ITEM_NAMES.DEVICE_MODELS, icon: faLaptop },
-            { name: ITEM_NAMES.DEVICE_VENDORS, icon: faLaptop },
-            { name: ITEM_NAMES.DEVICE_TYPES, icon: faLaptop },
-            { name: ITEM_NAMES.SCREEN_RESOLUTIONS, icon: faLaptop }
+            { name: ITEM_NAMES.DEVICE_MODELS, icon: faLaptop, saved: false },
+            { name: ITEM_NAMES.DEVICE_VENDORS, icon: faLaptop, saved: false },
+            { name: ITEM_NAMES.DEVICE_TYPES, icon: faLaptop, saved: false },
+            { name: ITEM_NAMES.SCREEN_RESOLUTIONS, icon: faLaptop, saved: false }
         ]
     },
     {
         defaultName: ITEM_NAMES.OS, type: ITEM_TYPES.DROPDOWN, icon: faMobile, dropdownItems: [
-            { name: ITEM_NAMES.OS, icon: faMobile },
-            { name: ITEM_NAMES.OS_VERSIONS, icon: faMobile }
+            { name: ITEM_NAMES.OS, icon: faMobile, saved: false },
+            { name: ITEM_NAMES.OS_VERSIONS, icon: faMobile, saved: false }
         ]
     },
     {
         defaultName: ITEM_NAMES.BROWSERS, type: ITEM_TYPES.DROPDOWN, icon: faFolder, dropdownItems: [
-            { name: ITEM_NAMES.BROWSER_NAMES, icon: faFolder },
-            { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder }
+            { name: ITEM_NAMES.BROWSER_NAMES, icon: faFolder, saved: false },
+            { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder, saved: false }
         ]
     },
-    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle },
+    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle, saved: false },
 ];
 
 export default function UpperControlPanel(props) {
-    const { activeItemName, setActiveItemName, excludeItemNames } = props;
+    const { activeItem, setActiveItem, excludeItemNames } = props;
 
     useEffect(() => {
-        if (!activeItemName) {
+        if (!activeItem) {
             const filteredItems = ITEMS.filter(item => !excludeItemNames.includes(item.name));
-            setActiveItemName(filteredItems[0].name);
+            setActiveItem(filteredItems[0]);
         }
     }, [excludeItemNames]);
 
@@ -99,7 +99,7 @@ export default function UpperControlPanel(props) {
             <div className='flex flex-wrap gap-6 mx-8 my-4 w-full'>
                 {ITEMS.map((item, index) => {
                     if (!excludeItemNames?.includes(item.name)) return (
-                        <UpperControlPanelItem item={item} key={index} activeItemName={activeItemName} setActiveItemName={setActiveItemName} />
+                        <UpperControlPanelItem item={item} key={index} activeItem={activeItem} setActiveItem={setActiveItem} />
                     )
                 })}
             </div>

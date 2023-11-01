@@ -1,4 +1,13 @@
 {
+    "suffixes": {
+        "AN" : "AN",
+        "CA" : "CA",
+        "CLK": "CLK",
+        "FL" : "FL",
+        "LP" : "LP",
+        "OF" : "OF",
+        "TS" : "TS"
+    },
     "terms": {
         "UNKNOWN": "Unknown"
     }
