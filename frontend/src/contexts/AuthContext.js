@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
     function fetchData() {
         if ((loggedIn && !fetchingData.current) || DISABLE_AUTH === true) {
             fetchingData.current = true;
+            setData([]);
+            setClicks([]);
 
             const _finally = () => {
                 if (fetchData.count < 2) {
@@ -113,6 +115,7 @@ export function AuthProvider({ children }) {
     const value = {
         data,
         clicks,
+        fetchData,
         loggedIn,
         login,
         logout,

@@ -3,7 +3,9 @@ import Button from './Button';
 import { faRandom } from '@fortawesome/free-solid-svg-icons';
 
 export default function ReportButton(props) {
-    const { newReport } = props;
+    const { newReport, mappedData } = props;
+
+    const selectedItems = mappedData?.filter(item => item.selected === true) || [];
 
     function handleButtonClick(e) {
         newReport();
@@ -13,8 +15,7 @@ export default function ReportButton(props) {
         <Button
             icon={faRandom}
             handleClick={handleButtonClick}
-            outlineColor='green'
-            bar={true}
+            disabled={selectedItems.length !== 1}
             text='Report'
         />
     )

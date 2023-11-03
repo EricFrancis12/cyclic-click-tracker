@@ -81,7 +81,7 @@ export const ITEMS = [
             { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder, saved: false }
         ]
     },
-    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle, saved: false },
+    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle, saved: false }
 ];
 
 export default function UpperControlPanel(props) {
@@ -94,10 +94,20 @@ export default function UpperControlPanel(props) {
         }
     }, [excludeItemNames]);
 
+    const line1 = ITEMS.filter(item => item.saved === true);
+    const line2 = ITEMS.filter(item => !item.saved);
+
     return (
         <div className='flex flex-col justify-center align-start w-full bg-tab_active_backgroundColor'>
             <div className='flex flex-wrap gap-6 mx-8 my-4 w-full'>
-                {ITEMS.map((item, index) => {
+                {line1.map((item, index) => {
+                    if (!excludeItemNames?.includes(item.name)) return (
+                        <UpperControlPanelItem item={item} key={index} activeItem={activeItem} setActiveItem={setActiveItem} />
+                    )
+                })}
+            </div>
+            <div className='flex flex-wrap gap-6 mx-8 my-4 w-full'>
+                {line2.map((item, index) => {
                     if (!excludeItemNames?.includes(item.name)) return (
                         <UpperControlPanelItem item={item} key={index} activeItem={activeItem} setActiveItem={setActiveItem} />
                     )

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import DropdownButton from './DropdownButton';
-import Dropdown from '../Dropdown';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DropdownButton, { DropdownItem } from './DropdownButton';
 import { faFire, faCopy, faArchive, faClone, faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default function ActionsDropdown(props) {
@@ -33,19 +31,15 @@ export default function ActionsDropdown(props) {
             setActive={setActive}
             text='Actions'
         >
-            <Dropdown>
-                {dropdownOptions.map((option, index) => {
-                    return option.active === true && selectedItems.length > 0
-                        ? (
-                            <div onClick={option.onClick}
-                                key={index} className='hover:bg-red-500'>
-                                <FontAwesomeIcon icon={option.icon} style={{ marginRight: '4px' }} />
-                                <span>{option.name}</span>
-                            </div>
-                        )
-                        : ''
-                })}
-            </Dropdown>
+            {dropdownOptions.map((option, index) => {
+                return option.active === true && selectedItems.length > 0
+                    ? (
+                        <DropdownItem key={index} icon={option.icon} onClick={option.onClick}>
+                            <span>{option.name}</span>
+                        </DropdownItem>
+                    )
+                    : ''
+            })}
         </DropdownButton>
     )
 }

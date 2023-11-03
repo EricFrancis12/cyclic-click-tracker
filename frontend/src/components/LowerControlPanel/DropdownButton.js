@@ -1,12 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
+import Dropdown from '../Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { traverseParentsForClass } from '../../utils/utils';
+import { traverseParentsForId } from '../../utils/utils';
 
-export const DROPDOWN_BUTTON_CLASS = 'DROPDOWN_BUTTON_CLASS';
+export const DROPDOWN_BUTTON_ID = 'DROPDOWN_BUTTON_ID';
+
+export function DropdownItem(props) {
+    const { children, text, icon, onClick } = props;
+
+    return (
+        <div onClick={onClick}
+            className='hover:bg-red-500'>
+            {icon && <FontAwesomeIcon icon={icon} style={{ marginRight: '4px' }} />}
+            {children || text}
+        </div>
+    )
+}
 
 export default function DropdownButton(props) {
     const { children, disabled, active, setActive, icon, text, handleClick, className, outlineEffect, bar } = props;
+
+    const id = useRef(crypto.randomUUID());
 
     useEffect(() => {
         if (!active) return;
@@ -24,25 +39,37 @@ export default function DropdownButton(props) {
         return () => document.removeEventListener('click', handleGlobalClick);
 
         function handleGlobalClick(e) {
-            if (!traverseParentsForClass(e.target, DROPDOWN_BUTTON_CLASS)) setActive(false);
+            if (setActive && !traverseParentsForId(e.target, id.current)) setActive(false);
         }
     })
 
     return (
-        <div className={DROPDOWN_BUTTON_CLASS + ' relative ' + (className ?? '') + (!disabled ? 'cursor-pointer' : ' ')}>
-            <div onClick={!disabled ? (handleClick ?? (e => setActive(!active))) : (e => { })}
-                className={(!disabled ? 'hover:opacity-70 ' : 'opacity-40 ') + ' px-2 py-2'}
-                style={{ border: 'solid lightgrey 1px', borderRadius: '6px', backgroundImage: 'linear-gradient(0deg,var(--color-gray5),var(--color-white))' }}
+        <div id={id.current} className={' relative whitespace-nowrap ' + (className || ' ') + (!disabled ? 'cursor-pointer ' : ' ')}>
+            <div onClick={!disabled ? (handleClick ?? setActive ? (e => setActive(!active)) : (e => null)) : (e => null)}
+                className={(!disabled ? 'hover:opacity-70 ' : 'opacity-40 ') + 'flex justify-between px-2 py-2'}
+                style={{
+                    minWidth: '100px',
+                    border: 'solid lightgrey 1px',
+                    borderRadius: '6px',
+                    backgroundImage: 'linear-gradient(0deg,var(--color-gray5),var(--color-white))'
+                }}
             >
-                <FontAwesomeIcon icon={icon ?? null} style={{ marginRight: '4px' }} />
-                <span style={{ marginRight: '4px' }}>
-                    {text ?? ''}
+                <span>
+                    {icon && <FontAwesomeIcon icon={icon} style={{ marginRight: '4px' }} />}
+                    <span style={{ marginRight: '4px' }}>
+                        {text ?? ''}
+                    </span>
                 </span>
-                <FontAwesomeIcon icon={active ? faChevronUp : faChevronDown} />
+                <span>
+                    <FontAwesomeIcon icon={active ? faChevronUp : faChevronDown} />
+                </span>
             </div >
-            {active &&
-                (children)
+            {
+                active && !disabled &&
+                <Dropdown>
+                    {children}
+                </Dropdown>
             }
-        </div>
+        </div >
     )
 }

@@ -17,6 +17,18 @@ export function replaceNonsense(any, replacement = 0) {
     return any;
 }
 
+export function replaceAtIndex(array, item, index) {
+    return array.splice(index, 1, item);
+}
+
+export function arrayOf(item, length = 1) {
+    let result = [];
+    for (let i = 0; i < length; i++) {
+        result.push(structuredClone(item));
+    }
+    return result;
+}
+
 export function makeDate(year, month, day, hour, min, sec, ms) {
     const date = new Date();
     date.setUTCFullYear(year, month, day); // year, month (0-11), day

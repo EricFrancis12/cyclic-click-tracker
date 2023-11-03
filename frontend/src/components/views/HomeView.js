@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Tab from '../Tab';
 import UpperControlPanel from '../UpperControlPanel/UpperControlPanel';
@@ -9,15 +9,19 @@ import { ITEM_NAMES, ITEMS } from '../UpperControlPanel/UpperControlPanel';
 import config from '../../config/config.json';
 const { UNKNOWN } = config.terms;
 
-export function mapClicks({ clicks, data, activeItem }) {
+export function mapClicks({ clicks, data, activeItem, timeframe }) {
     if (!clicks || !data || !activeItem) return [];
     const { dataProp, clickProp, name } = activeItem;
 
     let results = [];
     let savedDataItems = data[dataProp] ?? null;
 
-    for (let i = 0; i < clicks.length; i++) {
-        const click = clicks[i];
+    const clicksInTimeframe = timeframe
+        ? clicks.filter(click => isWithinTimeframe(click, timeframe))
+        : clicks;
+
+    for (let i = 0; i < clicksInTimeframe.length; i++) {
+        const click = clicksInTimeframe[i];
         const filteredResult = results.find(result => result.clickProp === click[clickProp]);
 
         const dataItem = (
@@ -54,6 +58,16 @@ export function mapClicks({ clicks, data, activeItem }) {
     return results;
 }
 
+export function isWithinTimeframe(click, timeframe) {
+    if (!click?.viewTimestamp || !timeframe) return false;
+
+    const [startDate, endDate] = timeframe;
+    const clickDate = new Date(click.viewTimestamp);
+
+    if (startDate <= clickDate && clickDate <= endDate) return true;
+    return false;
+}
+
 export default function HomeView(props) {
     const { view_id, active, handleTabClick, newReport, newItem, editItem, duplicateItem, archiveItem } = props;
 
@@ -63,13 +77,13 @@ export default function HomeView(props) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeItem, setActiveItem] = useState(ITEMS.find(item => item.name === ITEM_NAMES.CAMPAIGNS));
 
-    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem }));
+    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }));
 
     useEffect(() => {
-        if (clicks && data) {
-            setMappedData(mapClicks({ clicks, data, activeItem }));
+        if (clicks && data && timeframe) {
+            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }));
         }
-    }, [clicks, data]);
+    }, [clicks, data, timeframe]);
 
     function handleNewReport(props) {
         newReport({

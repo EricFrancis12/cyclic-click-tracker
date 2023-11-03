@@ -15,7 +15,7 @@ export default function NewButton(props) {
             handleClick={handleButtonClick}
             outlineColor='red'
             bar={true}
-            text={activeItem.saved === true ? `New ${activeItem.singName}` : 'New'}
+            text={activeItem?.saved === true ? `New ${activeItem?.singName}` : 'New'}
         />
     )
 }
