@@ -1,5 +1,13 @@
 
 
+export function isObject(any) {
+    return any != null && typeof any === 'object';
+}
+
+export function isArray(any) {
+    return Object.prototype.toString.call(any) === '[object Array]';
+}
+
 export function isNil(any) {
     return any === null || any === undefined;
 }
@@ -15,6 +23,24 @@ export function isNonsense(any) {
 export function replaceNonsense(any, replacement = 0) {
     if (isNonsense(any)) return replacement;
     return any;
+}
+
+export function stringIncludes(string, substring) {
+    console.log(string, substring);
+    if (isNil(string) || isNil(substring)) return false;
+    return string.toUpperCase().includes(substring.toUpperCase());
+}
+
+export function shallowFlatten(array) {
+    let result = [];
+    array.forEach(item => {
+        if (isArray(item)) {
+            result = [result, ...item];
+        } else {
+            result.push(item);
+        }
+    });
+    return result;
 }
 
 export function replaceAtIndex(array, item, index) {

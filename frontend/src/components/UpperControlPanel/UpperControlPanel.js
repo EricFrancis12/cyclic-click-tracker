@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { faBullseye, faHandshake, faFolder, faSitemap, faGlobe, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { faDollarSign, faDownload, faGlobeEurope, faWifi, faLaptop, faMobile, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import UpperControlPanelItem from './UpperControlPanelItem';
+import { isArray } from '../../utils/utils';
 
 export const ITEM_NAMES = {
     CAMPAIGNS: 'Campaigns',
@@ -49,40 +50,49 @@ export const ITEMS = [
     {
         defaultName: ITEM_NAMES.COUNTRIES, type: ITEM_TYPES.DROPDOWN, icon: faGlobeEurope, dropdownItems: [
             { name: ITEM_NAMES.LANGUAGES, icon: faGlobeEurope, saved: false, clickProp: 'language' },
-            { name: ITEM_NAMES.CITIES, icon: faGlobeEurope, saved: false },
-            { name: ITEM_NAMES.STATE_REGION, icon: faGlobeEurope, saved: false },
-            { name: ITEM_NAMES.COUNTRIES, icon: faGlobeEurope, saved: false }
+            { name: ITEM_NAMES.CITIES, icon: faGlobeEurope, saved: false, clickProp: 'city' },
+            { name: ITEM_NAMES.STATE_REGION, icon: faGlobeEurope, saved: false, clickProp: 'region' },
+            { name: ITEM_NAMES.COUNTRIES, icon: faGlobeEurope, saved: false, clickProp: 'country' }
         ]
     },
     {
         defaultName: ITEM_NAMES.ISP, type: ITEM_TYPES.DROPDOWN, icon: faWifi, dropdownItems: [
-            { name: ITEM_NAMES.ISP, icon: faWifi, saved: false },
-            { name: ITEM_NAMES.MOBILE_CARRIERS, icon: faWifi, saved: false },
-            { name: ITEM_NAMES.CONNECTION_TYPES, icon: faWifi, saved: false },
+            { name: ITEM_NAMES.ISP, icon: faWifi, saved: false, clickProp: 'isp' },
+            { name: ITEM_NAMES.MOBILE_CARRIERS, icon: faWifi, saved: false, clickProp: 'mobileCarrier' },
+            { name: ITEM_NAMES.CONNECTION_TYPES, icon: faWifi, saved: false, clickProp: 'connectionType' },
         ]
     },
     {
         defaultName: ITEM_NAMES.DEVICES, type: ITEM_TYPES.DROPDOWN, icon: faLaptop, dropdownItems: [
-            { name: ITEM_NAMES.DEVICE_MODELS, icon: faLaptop, saved: false },
-            { name: ITEM_NAMES.DEVICE_VENDORS, icon: faLaptop, saved: false },
-            { name: ITEM_NAMES.DEVICE_TYPES, icon: faLaptop, saved: false },
-            { name: ITEM_NAMES.SCREEN_RESOLUTIONS, icon: faLaptop, saved: false }
+            { name: ITEM_NAMES.DEVICE_MODELS, icon: faLaptop, saved: false, clickProp: 'deviceModel' },
+            { name: ITEM_NAMES.DEVICE_VENDORS, icon: faLaptop, saved: false, clickProp: 'deviceVendor' },
+            { name: ITEM_NAMES.DEVICE_TYPES, icon: faLaptop, saved: false, clickProp: 'deviceType' },
+            { name: ITEM_NAMES.SCREEN_RESOLUTIONS, icon: faLaptop, saved: false, clickProp: 'screenResolution' }
         ]
     },
     {
         defaultName: ITEM_NAMES.OS, type: ITEM_TYPES.DROPDOWN, icon: faMobile, dropdownItems: [
-            { name: ITEM_NAMES.OS, icon: faMobile, saved: false },
-            { name: ITEM_NAMES.OS_VERSIONS, icon: faMobile, saved: false }
+            { name: ITEM_NAMES.OS, icon: faMobile, saved: false, clickProp: 'os' },
+            { name: ITEM_NAMES.OS_VERSIONS, icon: faMobile, saved: false, clickProp: 'osVersion' }
         ]
     },
     {
         defaultName: ITEM_NAMES.BROWSERS, type: ITEM_TYPES.DROPDOWN, icon: faFolder, dropdownItems: [
-            { name: ITEM_NAMES.BROWSER_NAMES, icon: faFolder, saved: false },
-            { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder, saved: false }
+            { name: ITEM_NAMES.BROWSER_NAMES, icon: faFolder, saved: false, clickProp: 'browserName' },
+            { name: ITEM_NAMES.BROWSER_VERSIONS, icon: faFolder, saved: false, clickProp: 'browserVersion' }
         ]
     },
-    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle, saved: false }
+    { name: ITEM_NAMES.ERRORS, type: ITEM_TYPES.BUTTON, icon: faExclamationCircle, saved: false, clickProp: 'error' }
 ];
+
+export const flattened_ITEMS = ITEMS.reduce((acc, curr) => {
+    if (curr.name && !curr.dropdownItems) {
+        acc = [...acc, curr];
+    } else {
+        acc = [...acc, ...curr.dropdownItems];
+    }
+    return acc;
+}, []);
 
 export default function UpperControlPanel(props) {
     const { activeItem, setActiveItem, excludeItemNames } = props;

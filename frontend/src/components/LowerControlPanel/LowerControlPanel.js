@@ -6,11 +6,12 @@ import ReportButton from './ReportButton';
 import NewButton from './NewButton';
 import EditButton from './EditButton';
 import ActionsDropdown from './ActionsDropdown';
+import DrilldownButton from './DrilldownButton';
 import RefreshButton from './RefreshButton';
 
 export default function LowerControlPanel(props) {
-    const { mappedData, activeItem, newReport, newItem, editItem, duplicateItem, archiveItem } = props;
-    const { timeframe, setTimeframe, searchQuery, setSearchQuery, reportChain, setReportChain } = props;
+    const { mappedData, activeItem, setActiveItem, newReport, newItem, editItem, duplicateItem, archiveItem } = props;
+    const { timeframe, setTimeframe, searchQuery, setSearchQuery, reportChain, setReportChain, reportItem, drilldown } = props;
 
     return (
         <div className='flex flex-col justify-center align-start w-full bg-LowerConrolPanel_backgroundColor'
@@ -18,7 +19,8 @@ export default function LowerControlPanel(props) {
             {reportChain && setReportChain &&
                 <div className='flex gap-6 mx-8 my-4 w-full'>
                     <div className='flex flex-wrap gap-2 justify-center items-center'>
-                        <ReportChain reportChain={reportChain} setReportChain={setReportChain} activeItem={activeItem} />
+                        <ReportChain reportChain={reportChain} setReportChain={setReportChain} reportItem={reportItem}
+                            activeItem={activeItem} setActiveItem={setActiveItem} />
                     </div>
                 </div>
             }
@@ -29,7 +31,9 @@ export default function LowerControlPanel(props) {
                     {newReport && <ReportButton newReport={newReport} mappedData={mappedData} />}
                     {newItem && <NewButton activeItem={activeItem} newItem={newItem} />}
                     {editItem && <EditButton editItem={editItem} />}
-                    {(duplicateItem || archiveItem) && <ActionsDropdown mappedData={mappedData} duplicateItem={duplicateItem} archiveItem={archiveItem} />}
+                    {(duplicateItem || archiveItem) && <ActionsDropdown mappedData={mappedData}
+                        duplicateItem={duplicateItem} archiveItem={archiveItem} />}
+                    {drilldown && <DrilldownButton drilldown={drilldown} mappedData={mappedData} />}
                 </div>
             </div>
             <div className='flex gap-6 mx-8 my-4 w-full'>

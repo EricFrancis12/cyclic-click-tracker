@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Checkbox from './Checkbox';
 import ChevronToggle from './ChevronToggle';
+import Spinner from './Spinner';
 import { mapClicks } from './views/HomeView';
-import { replaceNonsense } from '../utils/utils';
+import { replaceNonsense, stringIncludes } from '../utils/utils';
 
 export const INDICATORS = {
     POSITIVE: {
@@ -18,17 +19,43 @@ export const INDICATORS = {
         name: '=',
         color: 'unset'
     },
+    getColor: (name) => {
+        let result;
+        switch (name) {
+            case INDICATORS.POSITIVE.name: result = INDICATORS.POSITIVE.color; break;
+            case INDICATORS.NEGATIVE.name: result = INDICATORS.NEGATIVE.color; break;
+            default: result = INDICATORS.NEUTRAL.color; break;
+        }
+        return result;
+    }
 };
 
 export default function DataTable(props) {
     const { activeItem, searchQuery, mappedData, setMappedData, timeframe, reportChain } = props;
-    const { name } = activeItem;
+    const { name: activeItemName } = activeItem;
 
     const { clicks, data } = useAuth();
 
+    const [loading, setLoading] = useState(mappedData?.length > 0);
     const [selectAllChecked, setSelectAllChecked] = useState(false);
 
     const dataTableRef = useRef();
+
+    useEffect(() => {
+        setMappedData(prevMappedData => {
+            return prevMappedData.map(row => ({ ...row, deepMappedData: undefined }));
+        });
+    }, [reportChain]);
+
+    useEffect(() => {
+        const mappedDataPresent = mappedData?.length > 0;
+
+        if (mappedDataPresent) {
+            setLoading(false);
+        } else {
+            setLoading(true);
+        }
+    }, [mappedData]);
 
     function handleChange(value, index) {
         value = JSON.parse(value);
@@ -48,19 +75,30 @@ export default function DataTable(props) {
     }
 
     function handleChevronToggle(active, row, index) {
-        const deepReport = active
+        const deepMappedData = active
             ? mapClicks({ clicks: row.clicks, data, activeItem: reportChain[1], timeframe })
             : null;
 
         const newMappedData = structuredClone(mappedData);
-        newMappedData[index].deepReport = deepReport;
+        newMappedData[index].deepMappedData = deepMappedData;
 
         setMappedData(newMappedData);
         setSelectAllChecked(false);
-
     }
 
-    const columns = [
+    function handleDeepChevronToggle(active, row, index, deepMappedDataIndex) {
+        const deepMappedData = active
+            ? mapClicks({ clicks: row.clicks, data, activeItem: reportChain[2], timeframe })
+            : null;
+
+        const newMappedData = structuredClone(mappedData);
+        newMappedData[index].deepMappedData[deepMappedDataIndex].deepMappedData = deepMappedData;
+
+        setMappedData(newMappedData);
+        setSelectAllChecked(false);
+    }
+
+    const columns = (activeItemName, reportChainIndex = 0) => [
         {
             name: ' ',
             selector: (row) => {
@@ -73,20 +111,33 @@ export default function DataTable(props) {
                         : INDICATORS.NEGATIVE.name;
             }
         },
-        (reportChain && reportChain[1]?.name
+        (reportChain?.at(reportChainIndex + 1)?.name
             ? {
                 name: ' ',
-                selector: (row, index) => <ChevronToggle callback={(active) => handleChevronToggle(active, row, index)} />
+                selector: (row, index, deepMappedDataIndex) => (
+                    <ChevronToggle callback={
+                        reportChainIndex === 0
+                            ? (active) => handleChevronToggle(active, row, index)
+                            : (active) => handleDeepChevronToggle(active, row, index, deepMappedDataIndex)}
+                        reportChain={reportChain}
+                    />
+                )
             }
             : {
-                name: () => <Checkbox onChange={e => toggleSelectAll(e.target.dataset.checked)}
-                    checked={selectAllChecked} />,
-                selector: (row, index) => <Checkbox onChange={e => handleChange(e.target.dataset.checked, index)}
-                    checked={row.selected} />
+                name: () => {
+                    return !loading && reportChainIndex === 0
+                        ? <Checkbox onChange={e => toggleSelectAll(e.target.dataset.checked)} checked={selectAllChecked} />
+                        : '';
+                },
+                selector: (row, index) => {
+                    return !loading && reportChainIndex === 0
+                        ? <Checkbox onChange={e => handleChange(e.target.dataset.checked, index)} checked={row.selected} />
+                        : '';
+                }
             }
         ),
         {
-            name: name,
+            name: activeItemName,
             selector: (row) => row.name
         },
         {
@@ -179,63 +230,130 @@ export default function DataTable(props) {
         <div ref={dataTableRef} style={{ height: '100vh', width: '100vw', backgroundColor: 'blue' }}>
             <div className='relative' style={{ border: 'solid black 5px' }}>
                 <div className='grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-hidden' style={{ backgroundColor: 'grey' }}>
-                    {columns.map((column, index) => (
-                        <div key={index}>
-                            <div className='flex justify-start items-center' style={{ minHeight: '20px' }}>
-                                {typeof column.name === 'function'
-                                    ? column.name(mappedData)
-                                    : column.name
+                    {loading
+                        ? <div className='flex justify-center items-center' style={{ height: '100%', width: '100%' }}>
+                            <Spinner />
+                        </div>
+                        : columns(activeItemName).map((column, index) => (
+                            <div key={index}>
+                                <div className='flex justify-start items-center' style={{ minHeight: '20px' }}>
+                                    {typeof column.name === 'function'
+                                        ? column.name(mappedData)
+                                        : column.name
+                                    }
+                                </div>
+                                {searchQuery && !stringIncludes(mappedData[index]?.name, searchQuery)
+                                    ? ''
+                                    : mappedData.map((_row, _index) => {
+                                        const _cell = column.selector(_row, _index);
+                                        return (
+                                            <div key={_index}>
+                                                <div className='flex justify-start items-center'
+                                                    style={{ backgroundColor: INDICATORS.getColor(_cell) }}
+                                                >
+                                                    <span style={{ zIndex: 200, opacity: index === 0 ? 0 : 100 }}>
+                                                        {_cell}
+                                                    </span>
+                                                </div>
+                                                {_row.deepMappedData && index === 0
+                                                    ? <div className='block'
+                                                        style={{
+                                                            left: 0,
+                                                            width: dataTableRef.current?.offsetWidth ?? '100vw',
+                                                            backgroundColor: 'blueviolet',
+                                                        }}
+                                                    >
+                                                        <div className='p-4' />
+                                                        {reportChain[1].name}
+                                                        <div className='grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-hidden'
+                                                            style={{ backgroundColor: 'purple' }}>
+                                                            {columns(reportChain[1].name, 1).map((__column, __index) => (
+                                                                <div key={__index}>
+                                                                    <div className='flex justify-start items-center' style={{ minHeight: '20px' }}>
+                                                                        {typeof __column.name === 'function'
+                                                                            ? __column.name(_row.deepMappedData)
+                                                                            : __column.name
+                                                                        }
+                                                                    </div>
+                                                                    {_row.deepMappedData.map((___row, ___index) => {
+                                                                        const ___cell = __column.selector(___row, ___index, _index);
+                                                                        console.log(___row);
+                                                                        return (
+                                                                            <div key={___index}>
+                                                                                <div className='flex justify-start items-center'
+                                                                                    style={{ backgroundColor: INDICATORS.getColor(___cell) }}
+                                                                                >
+                                                                                    <span style={{ zIndex: 200, opacity: __index === 0 ? 0 : 100 }}>
+                                                                                        {___cell}
+                                                                                    </span>
+                                                                                </div>
+
+
+
+                                                                                {___row.deepMappedData && __index === 0
+                                                                                    ? <div className='block'
+                                                                                        style={{
+                                                                                            left: 0,
+                                                                                            width: dataTableRef.current?.offsetWidth ?? '100vw',
+                                                                                            backgroundColor: 'yellow',
+                                                                                        }}
+                                                                                    >
+                                                                                        <div className='p-4' />
+                                                                                        {reportChain[2].name}
+                                                                                        <div className='grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-hidden'
+                                                                                            style={{ backgroundColor: 'orange' }}>
+                                                                                            {columns(reportChain[2].name, 2).map((____column, ____index) => (
+                                                                                                <div key={____index}>
+                                                                                                    <div className='flex justify-start items-center' style={{ minHeight: '20px' }}>
+                                                                                                        {typeof ____column.name === 'function'
+                                                                                                            ? ____column.name(___row.deepMappedData)
+                                                                                                            : ____column.name
+                                                                                                        }
+                                                                                                    </div>
+                                                                                                    {___row.deepMappedData.map((_____row, _____index) => {
+                                                                                                        const _____cell = '~|~' || ____column.selector(_____row, _____index, _index);
+                                                                                                        return (
+                                                                                                            <div key={_____index}>
+                                                                                                                <div className='flex justify-start items-center'
+                                                                                                                    style={{ backgroundColor: INDICATORS.getColor(_____cell) }}
+                                                                                                                >
+                                                                                                                    <span style={{ zIndex: 200, opacity: ____index === 0 ? 0 : 100 }}>
+                                                                                                                        {_____cell}
+                                                                                                                    </span>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        )
+                                                                                                    })}
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                        <button onClick={e => console.log(`Drilldown: ${_row.deepMappedData[__index]?.name} not yet implimented.`)}>
+                                                                                            {'Drilldown: ' + _row.deepMappedData[__index]?.name}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    : ''
+                                                                                }
+
+
+
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <button onClick={e => console.log(`Drilldown: ${mappedData[index]?.name} not yet implimented.`)}>
+                                                            {'Drilldown: ' + mappedData[index]?.name}
+                                                        </button>
+                                                    </div>
+                                                    : ''
+                                                }
+                                            </div>
+                                        )
+                                    })
                                 }
                             </div>
-                            {searchQuery && !mappedData[index]?.name?.toUpperCase()?.includes(searchQuery.toUpperCase())
-                                ? ''
-                                : mappedData.map((row, _index) => {
-                                    console.log(row);
-
-                                    const output = column.selector(row, _index);
-                                    return (
-                                        <>
-                                            <div key={_index} className='flex justify-start items-center'
-                                                style={{
-                                                    backgroundColor: output === INDICATORS.POSITIVE.name
-                                                        ? INDICATORS.POSITIVE.color
-                                                        : output === INDICATORS.NEGATIVE.name
-                                                            ? INDICATORS.NEGATIVE.color
-                                                            : output === INDICATORS.NEUTRAL.name
-                                                                ? INDICATORS.NEUTRAL.color
-                                                                : ''
-                                                }}
-                                            >
-                                                <span style={{ opacity: index === 0 ? 0 : 100 }}>
-                                                    {output}
-                                                </span>
-                                            </div>
-                                            {row.deepReport && index === 0
-                                                ? <div className=''
-                                                    style={{
-                                                        display: 'block',
-                                                        left: 0,
-                                                        height: '100px',
-                                                        width: dataTableRef.current.offsetWidth,
-                                                        backgroundColor: 'purple',
-                                                    }}
-                                                >
-                                                    Deep Report Content
-                                                    <div>
-                                                        {reportChain && reportChain[2]?.name
-                                                            ? <div>Depper Report Content</div>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                                </div>
-                                                : ''
-                                            }
-                                        </>
-                                    )
-                                })
-                            }
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </div>
         </div >

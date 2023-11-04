@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import DropdownButton, { DropdownItem } from './DropdownButton';
-import { ITEMS } from '../UpperControlPanel/UpperControlPanel';
+import { flattened_ITEMS } from '../UpperControlPanel/UpperControlPanel';
 import { MAX_REPORT_CHAIN_LENGTH } from '../views/ReportView';
 import { arrayOf } from '../../utils/utils';
 
@@ -9,11 +10,17 @@ const TERMS = {
 };
 
 export default function ReportChain(props) {
-    const { reportChain, setReportChain, activeItem } = props;
+    const { reportChain, setReportChain, reportItem, activeItem, setActiveItem } = props;
 
-    const [dropdownsActive, setDropdownsActive] = useState(reportChain.map(() => false));
+    const { fetchData } = useAuth();
 
-    const dropdownItems = ITEMS.filter(item => item.name !== activeItem?.name);
+    const DEFAULT_DROPDOWNS_ACTIVE = reportChain.map(() => false);
+    const [dropdownsActive, setDropdownsActive] = useState(DEFAULT_DROPDOWNS_ACTIVE);
+
+    const dropdownItems = [
+        ...flattened_ITEMS.filter(item => item.name !== activeItem?.name && item.name !== reportItem.name),
+        // add more custom items here like Custom 1-10, time periods, referrers, etc.
+    ];
 
     function handleSetActive(active, index) {
         setDropdownsActive(prevDropdownsActive => {
@@ -25,6 +32,13 @@ export default function ReportChain(props) {
     }
 
     function handleClick(item, index) {
+        if (index === 0) {
+            setActiveItem(item);
+            fetchData();
+        }
+
+        setDropdownsActive(DEFAULT_DROPDOWNS_ACTIVE);
+
         setReportChain(prevReportChain => {
             const newReportChain = [...prevReportChain];
             newReportChain.splice(index, MAX_REPORT_CHAIN_LENGTH, ...[
@@ -46,14 +60,14 @@ export default function ReportChain(props) {
             {reportChain.map((chainLink, index) => (
                 <div key={index} className='p-1'>
                     <DropdownButton
-                        text={chainLink.disabled ? '' : (chainLink.name || TERMS.NONE)}
+                        text={chainLink.disabled ? '' : ((index === 0 ? activeItem.name : chainLink.name) || TERMS.NONE)}
                         disabled={chainLink.disabled}
                         active={dropdownsActive[index] !== false}
-                        setActive={active => handleSetActive(active, index)}
+                        setActive={(active) => handleSetActive(active, index)}
                     >
                         {index !== 0 &&
                             <DropdownItem text={TERMS.NONE}
-                                onClick={e => handleClick(activeItem, index)}
+                                onClick={e => handleClick({ name: null }, index)}
                             />
                         }
                         {dropdownItems.map((dropdownItem, _index) => {

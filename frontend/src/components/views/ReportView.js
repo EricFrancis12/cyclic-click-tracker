@@ -11,13 +11,15 @@ import { mapClicks } from './HomeView';
 export const MAX_REPORT_CHAIN_LENGTH = 3;
 
 export default function ReportView(props) {
-    const { view_id, active, handleTabClick, closeView, item } = props;
+    const { view_id, active, handleTabClick, closeView, item: reportItem } = props;
 
     const { clicks, data } = useAuth();
 
     const [timeframe, setTimeframe] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeItem, setActiveItem] = useState(item);
+
+    const defaultFirstItem = ITEMS.filter(_item => _item.name !== reportItem.name)?.at(0);
+    const [activeItem, setActiveItem] = useState(defaultFirstItem);
 
     const [reportChain, setReportChain] = useState([
         { ...activeItem, disabled: false },
@@ -33,17 +35,22 @@ export default function ReportView(props) {
         }
     }, [clicks, data, timeframe]);
 
+    function drilldown(e) {
+        console.log('Drilldown not yet implimented.');
+    }
 
     return (
         <div style={{ zIndex: active ? 100 : 1 }}>
-            <Tab icon={faFile} name={activeItem.name} view_id={view_id} active={active} handleTabClick={handleTabClick} closeView={closeView}>
+            <Tab icon={faFile} name={reportItem.name} view_id={view_id} active={active} handleTabClick={handleTabClick} closeView={closeView}>
                 <div className='absolute' style={{ height: '100vh', width: '100vw' }} />
             </Tab>
             <div className='absolute' style={{ top: '40px', left: '0', width: '100vw', fontSize: '13px' }}>
-                <UpperControlPanel activeItem={activeItem} setActiveItem={setActiveItem} excludeItemNames={[activeItem.name]} />
-                <LowerControlPanel reportChain={reportChain} setReportChain={setReportChain}
+                <UpperControlPanel activeItem={activeItem} setActiveItem={setActiveItem} excludeItemNames={[reportItem.name]} />
+                <LowerControlPanel activeItem={activeItem} setActiveItem={setActiveItem} mappedData={mappedData}
+                    reportChain={reportChain} setReportChain={setReportChain} reportItem={reportItem}
                     timeframe={timeframe} setTimeframe={setTimeframe}
                     searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+                    drilldown={drilldown}
                 />
                 {activeItem.name === ITEM_NAMES.CONVERSIONS
                     ? ''

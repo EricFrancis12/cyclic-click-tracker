@@ -240,7 +240,7 @@ export default function ToggleButton(props) {
             {active &&
                 <div onClick={e => handleCalendarClick()}
                     className='absolute bg-white'
-                    style={{ border: 'solid black 1px' }}
+                    style={{ border: 'solid black 1px', zIndex: 100 }}
                 >
                     <div className='flex'>
                         <div className='m-4'>

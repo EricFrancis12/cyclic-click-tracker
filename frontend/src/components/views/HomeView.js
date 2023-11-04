@@ -29,7 +29,7 @@ export function mapClicks({ clicks, data, activeItem, timeframe }) {
             // below is a fix for if the click doesn't have a ".affiliateNetwork_id" property.
             // we are simply searching for an affiliateNetwork that contains an "offer._id" matching "click.offer_id":
             ?? (name === ITEM_NAMES.AFFILIATE_NETWORKS
-                ? data.affiliateNetworks.find((affiliateNetwork) =>
+                ? data.affiliateNetworks?.find((affiliateNetwork) =>
                     affiliateNetwork.offers.some((offer) => offer._id === click.offer_id)
                 ) ?? null
                 : null)

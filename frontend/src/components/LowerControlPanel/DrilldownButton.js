@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from './Button';
 import { faRandom } from '@fortawesome/free-solid-svg-icons';
 
-export default function ReportButton(props) {
-    const { newReport, mappedData } = props;
+export default function DrilldownButton(props) {
+    const { drilldown, mappedData } = props;
 
     const selectedItems = mappedData?.filter(item => item.selected === true) || [];
 
     function handleButtonClick(e) {
-        newReport();
+        drilldown();
     }
 
     return (
@@ -16,7 +16,7 @@ export default function ReportButton(props) {
             icon={faRandom}
             handleClick={handleButtonClick}
             disabled={selectedItems.length !== 1}
-            text='Report'
+            text='Drilldown'
         />
     )
 }

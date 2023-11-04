@@ -19,9 +19,9 @@ export function DropdownItem(props) {
 }
 
 export default function DropdownButton(props) {
-    const { children, disabled, active, setActive, icon, text, handleClick, className, outlineEffect, bar } = props;
+    const { children, disabled, active, setActive, icon, text, handleClick, className, id: _id } = props;
 
-    const id = useRef(crypto.randomUUID());
+    const id = useRef(_id || crypto.randomUUID());
 
     useEffect(() => {
         if (!active) return;
@@ -41,7 +41,7 @@ export default function DropdownButton(props) {
         function handleGlobalClick(e) {
             if (setActive && !traverseParentsForId(e.target, id.current)) setActive(false);
         }
-    })
+    }, []);
 
     return (
         <div id={id.current} className={' relative whitespace-nowrap ' + (className || ' ') + (!disabled ? 'cursor-pointer ' : ' ')}>
