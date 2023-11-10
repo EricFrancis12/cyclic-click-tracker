@@ -11,10 +11,12 @@ export default function Checkbox(props) {
     }
 
     return (
-        <input onChange={handleChange}
-            type='checkbox'
-            checked={_checked ?? checked}
-            data-checked={_checked ?? checked}
-        />
+        <span className='text-right w-full cursor-pointer'>
+            <input onChange={handleChange}
+                type='checkbox'
+                checked={_checked ?? checked}
+                data-checked={_checked ?? checked}
+            />
+        </span>
     )
 }

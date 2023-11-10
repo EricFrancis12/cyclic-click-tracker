@@ -20,15 +20,18 @@ export function isNonsense(any) {
     return isEmpty(any) || isNaN(any) || any === Infinity;
 }
 
+export function isEven(number) {
+    return number % 2 === 0;
+}
+
 export function replaceNonsense(any, replacement = 0) {
     if (isNonsense(any)) return replacement;
     return any;
 }
 
 export function stringIncludes(string, substring) {
-    console.log(string, substring);
-    if (isNil(string) || isNil(substring)) return false;
-    return string.toUpperCase().includes(substring.toUpperCase());
+    if (isNil(string) || isNil(substring) || typeof string !== 'string' || typeof substring !== 'string') return false;
+    return string?.toUpperCase()?.includes(substring?.toUpperCase());
 }
 
 export function shallowFlatten(array) {

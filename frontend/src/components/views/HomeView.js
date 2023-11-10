@@ -3,13 +3,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import Tab from '../Tab';
 import UpperControlPanel from '../UpperControlPanel/UpperControlPanel';
 import LowerControlPanel from '../LowerControlPanel/LowerControlPanel';
-import DataTable from '../DataTable';
+import DataTable from '../DataTable/DataTable';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { ITEM_NAMES, ITEMS } from '../UpperControlPanel/UpperControlPanel';
 import config from '../../config/config.json';
 const { UNKNOWN } = config.terms;
 
-export function mapClicks({ clicks, data, activeItem, timeframe }) {
+export function mapClicks({ clicks, data, activeItem, timeframe }, backfill) {
     if (!clicks || !data || !activeItem) return [];
     const { dataProp, clickProp, name } = activeItem;
 
@@ -47,6 +47,23 @@ export function mapClicks({ clicks, data, activeItem, timeframe }) {
         }
     }
 
+    // backfill means we loop thru dataItems that received 0 clicks,
+    // and include them in results anyways
+    // (so they will appear as a row):
+    if (backfill === true) {
+        for (let j = 0; j < savedDataItems?.length; j++) {
+            const dataItemInResults = results.some(result => result._id === savedDataItems[j]._id);
+            if (!dataItemInResults) {
+                const result = {
+                    ...structuredClone(savedDataItems[j]),
+                    clickProp: savedDataItems[j]._id,
+                    clicks: []
+                };
+                results.push(result);
+            }
+        }
+    }
+
     // here's an example of what results could look like:
     // result = [
     //     { name: 'Unknown', clickProp: '012', clicks: [{}, {}, {}] },
@@ -77,17 +94,18 @@ export default function HomeView(props) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeItem, setActiveItem] = useState(ITEMS.find(item => item.name === ITEM_NAMES.CAMPAIGNS));
 
-    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }));
+    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }, true));
 
     useEffect(() => {
         if (clicks && data && timeframe) {
-            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }));
+            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }, true));
         }
     }, [clicks, data, timeframe]);
 
     function handleNewReport(props) {
         newReport({
             ...props,
+            timeframe,
             item: structuredClone(activeItem),
             // add HomeView-specific data here to pass to ReportView
         });

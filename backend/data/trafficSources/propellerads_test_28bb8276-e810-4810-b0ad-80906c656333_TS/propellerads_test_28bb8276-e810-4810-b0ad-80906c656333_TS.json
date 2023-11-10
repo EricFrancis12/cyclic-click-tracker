@@ -1,0 +1,20 @@
+{
+    "_id": "propellerads_test_28bb8276-e810-4810-b0ad-80906c656333_TS",
+    "fileName": "propellerads_test_28bb8276-e810-4810-b0ad-80906c656333_TS.json",
+    "timestamp": 1699400141875,
+    "timestampFormatted": "11-07-2023_17_35_41",
+    "name": "propellerads test",
+    "postbackUrl": "https://testpostbackurl.com",
+    "tokens": [
+        {
+            "name": "External ID",
+            "key": "externalId",
+            "value": "{external_id}"
+        },
+        {
+            "name": "Cost",
+            "key": "cost",
+            "value": "{cost}"
+        }
+    ]
+}

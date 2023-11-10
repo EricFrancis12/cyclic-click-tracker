@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import Calendar from 'react-calendar';
-import { traverseParentsForClass, makeDate, formatDatesRange } from '../../utils/utils';
+import { traverseParentsForClass, makeDate, formatDatesRange, isArray } from '../../utils/utils';
 
 export const CALENDAR_BUTTON_CLASS = 'CALENDAR_BUTTON_CLASS';
 export const CALENDAR_APPLY_BUTTON_CLASS = 'CALENDAR_APPLY_BUTTON_CLASS';
 
 export const ONE_DAY_MS = 86_400_000;
-export const ONE_DAY_DIFF_MS = ONE_DAY_MS - 1;
+export const ONE_DAY_MS_MINUS_ONE = ONE_DAY_MS - 1;
 export const EARLIEST_TIMESTAMP_ALLOWED = makeDate(2023, 0, 1, 0, 0, 0, 0).getTime();
 
 export const TIMEFRAME_TYPE_NAMES = {
@@ -20,10 +20,31 @@ export const TIMEFRAME_TYPE_NAMES = {
     THIS_MONTH: 'This Month',
     LAST_MONTH: 'Last Month',
     MAX_AVAILABLE: 'Max. available',
-    DATE_RANGE: 'Date Range'
+    DATE_RANGE: 'Date Range',
+    calcDefault: (timeframe) => {
+        if (!timeframe || !isArray(timeframe)) return DEFAULT_TIMEFRAME_TYPE_NAME;
+
+        const [timeframeStartDate, timeframeEndDate] = timeframe;
+
+        for (const key in TIMEFRAME_TYPE_NAMES) {
+            const name = TIMEFRAME_TYPE_NAMES[key];
+            const [startDate, endDate] = getDates(name);
+
+            if (startDate > timeframeStartDate
+                || startDate < timeframeStartDate
+                || endDate > timeframeEndDate
+                || endDate < timeframeEndDate) {
+                continue;
+            }
+
+            return name;
+        }
+
+        return formatDatesRange(timeframe);
+    }
 };
 
-export const DEFAULT_TIMEFRAME_TYPE_NAME = TIMEFRAME_TYPE_NAMES.LAST_7_DAYS;
+export const DEFAULT_TIMEFRAME_TYPE_NAME = TIMEFRAME_TYPE_NAMES.LAST_30_DAYS;
 
 export function getDates(name) {
     const date = new Date();
@@ -32,9 +53,9 @@ export function getDates(name) {
     const day = date.getDate();
 
     const startOfTodayMS = makeDate(year, month, day, 5, 0, 0, 0).getTime();
-    const endOfTodayMS = startOfTodayMS + ONE_DAY_DIFF_MS;
+    const endOfTodayMS = startOfTodayMS + ONE_DAY_MS_MINUS_ONE;
 
-    let result;
+    let result = [];
     switch (name) {
         case TIMEFRAME_TYPE_NAMES.TODAY: {
             result = [startOfTodayMS, endOfTodayMS];
@@ -42,7 +63,7 @@ export function getDates(name) {
         }
         case TIMEFRAME_TYPE_NAMES.YESTERDAY: {
             const startOfYesterdayMS = startOfTodayMS - ONE_DAY_MS;
-            const endOfYesterdayMS = startOfYesterdayMS + ONE_DAY_DIFF_MS;
+            const endOfYesterdayMS = startOfYesterdayMS + ONE_DAY_MS_MINUS_ONE;
             result = [startOfYesterdayMS, endOfYesterdayMS];
             break;
         }
@@ -87,13 +108,13 @@ export function getDates(name) {
     return result.map(timestamp => new Date(timestamp));
 }
 
-export default function ToggleButton(props) {
+export default function CalendarButton(props) {
     const { timeframe, setTimeframe } = props;
 
     const [active, setActive] = useState(false);
     const [calendarValue, setCalendarValue] = useState(timeframe ?? getDates(DEFAULT_TIMEFRAME_TYPE_NAME));
 
-    const [activeTimeframeTypeName, setActiveTimeframeTypeName] = useState(DEFAULT_TIMEFRAME_TYPE_NAME);
+    const [activeTimeframeTypeName, setActiveTimeframeTypeName] = useState(TIMEFRAME_TYPE_NAMES.calcDefault(timeframe));
     const originalActiveTimeframeTypeName = useRef(activeTimeframeTypeName);
 
     useEffect(() => {
@@ -195,7 +216,6 @@ export default function ToggleButton(props) {
         }
 
         if (!traverseParentsForClass(e.target, CALENDAR_BUTTON_CLASS) && !e.target.classList.contains(CALENDAR_APPLY_BUTTON_CLASS)) {
-            console.log('handling cancel');
             handleCancel();
         }
     }

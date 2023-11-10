@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Tab from '../Tab';
 import UpperControlPanel from '../UpperControlPanel/UpperControlPanel';
 import LowerControlPanel from '../LowerControlPanel/LowerControlPanel';
-import DataTable from '../DataTable';
+import DataTable from '../DataTable/DataTable';
 import { ITEM_NAMES, ITEMS } from '../UpperControlPanel/UpperControlPanel';
 import { faFile } from '@fortawesome/free-solid-svg-icons';
 import { mapClicks } from './HomeView';
@@ -11,11 +11,11 @@ import { mapClicks } from './HomeView';
 export const MAX_REPORT_CHAIN_LENGTH = 3;
 
 export default function ReportView(props) {
-    const { view_id, active, handleTabClick, closeView, item: reportItem } = props;
+    const { view_id, active, handleTabClick, closeView, item: reportItem, timeframe: _timeframe } = props;
 
     const { clicks, data } = useAuth();
 
-    const [timeframe, setTimeframe] = useState(null);
+    const [timeframe, setTimeframe] = useState(_timeframe || null);
     const [searchQuery, setSearchQuery] = useState('');
 
     const defaultFirstItem = ITEMS.filter(_item => _item.name !== reportItem.name)?.at(0);
@@ -27,11 +27,11 @@ export default function ReportView(props) {
         { name: null, disabled: true }
     ]);
 
-    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }));
+    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }, false));
 
     useEffect(() => {
         if (clicks && data && timeframe) {
-            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }));
+            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }, false));
         }
     }, [clicks, data, timeframe]);
 

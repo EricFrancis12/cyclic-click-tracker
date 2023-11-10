@@ -30,7 +30,7 @@ export default function LowerControlPanel(props) {
                     <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     {newReport && <ReportButton newReport={newReport} mappedData={mappedData} />}
                     {newItem && <NewButton activeItem={activeItem} newItem={newItem} />}
-                    {editItem && <EditButton editItem={editItem} />}
+                    {editItem && <EditButton editItem={editItem} mappedData={mappedData}/>}
                     {(duplicateItem || archiveItem) && <ActionsDropdown mappedData={mappedData}
                         duplicateItem={duplicateItem} archiveItem={archiveItem} />}
                     {drilldown && <DrilldownButton drilldown={drilldown} mappedData={mappedData} />}

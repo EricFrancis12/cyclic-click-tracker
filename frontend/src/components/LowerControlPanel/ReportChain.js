@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import DropdownButton, { DropdownItem } from './DropdownButton';
 import { flattened_ITEMS } from '../UpperControlPanel/UpperControlPanel';
@@ -22,14 +22,7 @@ export default function ReportChain(props) {
         // add more custom items here like Custom 1-10, time periods, referrers, etc.
     ];
 
-    function handleSetActive(active, index) {
-        setDropdownsActive(prevDropdownsActive => {
-            const newDropdownsActive = [...prevDropdownsActive];
-            newDropdownsActive.splice(index, 1, active);
-
-            return newDropdownsActive;
-        });
-    }
+    useEffect(() => handleClick(activeItem, 0), [activeItem]);
 
     function handleClick(item, index) {
         if (index === 0) {
@@ -52,6 +45,15 @@ export default function ReportChain(props) {
             }
 
             return newReportChain;
+        });
+    }
+
+    function handleSetActive(active, index) {
+        setDropdownsActive(prevDropdownsActive => {
+            const newDropdownsActive = [...prevDropdownsActive];
+            newDropdownsActive.splice(index, 1, active);
+
+            return newDropdownsActive;
         });
     }
 
