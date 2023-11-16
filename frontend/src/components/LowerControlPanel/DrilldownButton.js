@@ -8,7 +8,7 @@ export default function DrilldownButton(props) {
     const selectedItems = mappedData?.filter(item => item.selected === true) || [];
 
     function handleButtonClick(e) {
-        drilldown();
+        drilldown(e);
     }
 
     return (

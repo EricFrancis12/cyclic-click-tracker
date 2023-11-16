@@ -6,6 +6,7 @@ export default function useColumnDragger() {
     function handleMouseDown(e, _id) {
         id.current = _id;
         document.body.style.cursor = 'e-resize';
+        document.body.style.userSelect = 'none';
 
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('mousemove', handleMouseMove);
@@ -14,6 +15,7 @@ export default function useColumnDragger() {
     function handleMouseUp(e) {
         id.current = '';
         document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'default';
 
         document.removeEventListener('mouseup', handleMouseUp);
         document.removeEventListener('mousemove', handleMouseMove);

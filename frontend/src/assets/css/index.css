@@ -11,3 +11,8 @@
 body {
   overflow: hidden;
 }
+
+.bg-even_list_item.bg-data_table_row_hovered,
+.bg-odd_list_item.bg-data_table_row_hovered {
+  background-color: #e7f6f3;
+}

@@ -59,6 +59,7 @@ export default function ReportView(props) {
                         : <DataTable activeItem={activeItem} searchQuery={searchQuery}
                             mappedData={mappedData} setMappedData={setMappedData}
                             timeframe={timeframe} reportChain={reportChain}
+                            drilldown={drilldown}
                         />
                 }
             </div>

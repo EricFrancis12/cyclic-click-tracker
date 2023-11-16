@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Checkbox from './Checkbox';
 import ChevronToggle from './ChevronToggle';
 import Spinner from '../Spinner';
+import DrilldownButton from '../LowerControlPanel/DrilldownButton';
 import useWindowResize from '../../hooks/useWindowResize';
 import useColumnDragger from '../../hooks/useColumnDragger';
 import useRowHover from '../../hooks/useRowHover';
@@ -20,7 +21,7 @@ export const INDICATORS = {
     },
     NEUTRAL: {
         name: '=',
-        color: 'unset'
+        color: 'grey'
     },
     getColor: (name) => {
         let result;
@@ -34,7 +35,7 @@ export const INDICATORS = {
 };
 
 export default function DataTable(props) {
-    const { activeItem, searchQuery, mappedData, setMappedData, timeframe, reportChain } = props;
+    const { activeItem, searchQuery, mappedData, setMappedData, timeframe, reportChain, drilldown } = props;
     const { name: activeItemName } = activeItem;
 
     const { clicks, data, fetchData } = useAuth();
@@ -81,6 +82,8 @@ export default function DataTable(props) {
     }, [activeItem.name]);
 
     function changeRowSelection(value, index) {
+        if (reportChain?.at(1)?.name) return;
+
         value = JSON.parse(value);
         const newMappedData = structuredClone(mappedData);
         newMappedData[index].selected = !value;
@@ -90,6 +93,8 @@ export default function DataTable(props) {
     }
 
     function toggleSelectAll(value) {
+        if (reportChain?.at(1)?.name) return;
+
         value = JSON.parse(value);
         const newMappedData = mappedData.map(row => ({ ...row, selected: !value }));
 
@@ -97,27 +102,13 @@ export default function DataTable(props) {
         setSelectAllChecked(!value);
     }
 
-    function handleChevronToggle(active, row, index) {
-        console.log('chevronToggle');
+    function handleChevronToggle(active, row, index, activeItem) {
         const deepMappedData = active
-            ? mapClicks({ clicks: row.clicks, data, activeItem: reportChain[1], timeframe })
+            ? mapClicks({ clicks: row.clicks, data, activeItem, timeframe })
             : null;
 
         const newMappedData = structuredClone(mappedData);
         newMappedData[index].deepMappedData = deepMappedData;
-
-        setMappedData(newMappedData);
-        setSelectAllChecked(false);
-    }
-
-    function handleDeepChevronToggle(active, row, index, deepMappedDataIndex) {
-        console.log('deepChevronToggle');
-        const deepMappedData = active
-            ? mapClicks({ clicks: row.clicks, data, activeItem: reportChain[2], timeframe })
-            : null;
-
-        const newMappedData = structuredClone(mappedData);
-        newMappedData[index].deepMappedData[deepMappedDataIndex].deepMappedData = deepMappedData;
 
         setMappedData(newMappedData);
         setSelectAllChecked(false);
@@ -139,13 +130,9 @@ export default function DataTable(props) {
         (reportChain?.at(reportChainIndex + 1)?.name
             ? {
                 name: ' ',
-                selector: (row, index, deepMappedDataIndex) => (
-                    <ChevronToggle callback={
-                        reportChainIndex === 0
-                            ? (active) => handleChevronToggle(active, row, index)
-                            : (active) => handleDeepChevronToggle(active, row, index, deepMappedDataIndex)}
-                        reportChain={reportChain}
-                    />
+                selector: (row, index) => (
+                    <ChevronToggle reportChain={reportChain}
+                        callback={(active) => handleChevronToggle(active, row, index, reportChain[reportChainIndex + 1])} />
                 )
             }
             : {
@@ -251,7 +238,9 @@ export default function DataTable(props) {
         }
     ];
 
-    function columnTotal(mappedData, column) {
+    function columnTotal(mappedData, column, index) {
+        if (index <= 2) return '';
+
         let isPercentage = false;
         return mappedData
             .map((_row, _index) => {
@@ -264,8 +253,8 @@ export default function DataTable(props) {
     }
 
     return (
-        <div ref={dataTableRef} style={{ width: 'auto', backgroundColor: 'blue', height: dataTableRef.fillRestOfScreen() }}>
-            <div className='relative grid grid-flow-col whitespace-nowrap overflow-scroll h-full bg-even_list_item'>
+        <div ref={dataTableRef} style={{ width: 'auto', height: dataTableRef.fillRestOfScreen() }}>
+            <div className='relative grid grid-flow-col whitespace-nowrap overflow-x-scroll h-full bg-even_list_item'>
                 {loading
                     ? <div className='flex justify-center items-center' style={{ height: '100%', width: '100%' }}>
                         <Spinner />
@@ -273,14 +262,14 @@ export default function DataTable(props) {
                     : columns(activeItemName).map((column, index) => {
                         const id = crypto.randomUUID();
                         return (
-                            <div key={index} id={id} className='relative'>
-                                <div className='absolute' style={{ right: 0, height: '100%', width: '1px', backgroundColor: 'lightgray' }}>
-                                    <div onMouseDown={e => handleMouseDown(e, id)}
-                                        className='cursor-e-resize opacity-0 hover:opacity-100' style={{ height: '100%', border: 'dashed black 1px' }} />
+                            <div key={index} id={id} className='relative pb-16 first:w-6'>
+                                <div className='absolute h-full' style={{ right: 0, width: '1px', backgroundColor: 'lightgray' }}>
+                                    <div onMouseDown={index <= 1 ? null : e => handleMouseDown(e, id)}
+                                        className={(index <= 1 ? '' : 'cursor-e-resize hover:opacity-100') + ' h-full opacity-0'}
+                                        style={{ border: 'dashed black 1px' }} />
                                 </div>
-                                <div className='flex justify-start items-center overflow-hidden px-2 bg-NavBar_backgroundColor'
-                                    style={{ minHeight: '20px', minWidth: '100px', color: 'white', borderLeft: 'solid lightgray 1px' }}
-                                >
+                                <div className='flex justify-start items-center overflow-hidden px-2 h-8 text-white bg-NavBar_backgroundColor'
+                                    style={{ minWidth: index !== 1 ? '100px' : '30px', borderLeft: 'solid lightgray 1px' }}>
                                     {typeof column.name === 'function'
                                         ? column.name(mappedData)
                                         : column.name
@@ -291,21 +280,22 @@ export default function DataTable(props) {
                                     return searchQuery && !stringIncludes(_row.name, searchQuery)
                                         ? ''
                                         : (
-                                            <div key={_index}
-                                                style={{ borderBottom: 'solid lightgray 1px', backgroundColor: _row.selected ? '#d1ede7' : '' }}
-                                                className={(isEven(_index) ? 'bg-even_list_item' : 'bg-odd_list_item') + ' cursor-pointer'}
-                                                data-row_index={_index}
-                                                onMouseEnter={e => handleMouseEnter(e, `div[data-row_index="${_index}"]`)}
-                                                onClick={e => changeRowSelection(_row.selected === true, _index)}
-                                            >
-                                                <div className='flex justify-start items-center overflow-hidden px-2'
-                                                    style={{ backgroundColor: INDICATORS.getColor(_cell) }}
+                                            <React.Fragment key={_index}>
+                                                <div style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px', backgroundColor: _row.selected ? '#d1ede7' : '' }}
+                                                    className={(isEven(_index) ? 'bg-even_list_item' : 'bg-odd_list_item')
+                                                        + ' flex justify-start items-center overflow-hidden px-2 h-8 cursor-pointer'}
+                                                    data-_row_index={_index}
+                                                    onMouseEnter={e => handleMouseEnter(e, `div[data-_row_index="${_index}"]`)}
+                                                    onClick={e => changeRowSelection(_row.selected === true, _index)}
                                                 >
-                                                    <span className='text-right w-full' style={{ zIndex: 200, opacity: index === 0 ? 0 : 100 }}>
+                                                    <span style={{ backgroundColor: index === 0 ? INDICATORS.getColor(_cell) : '' }}
+                                                        className={(index === 0 ? 'text-white' : index === 2 ? 'text-left' : 'text-right') + ' w-full'}
+                                                    >
                                                         {_cell}
                                                     </span>
-                                                </div>
-                                                {_row.deepMappedData && index === 0
+
+
+                                                    {/* {_row.deepMappedData && index === 0
                                                     ? <div className='block'
                                                         style={{
                                                             left: 0,
@@ -319,12 +309,12 @@ export default function DataTable(props) {
                                                             style={{ backgroundColor: 'purple' }}>
                                                             {columns(reportChain[1].name, 1).map((__column, __index) => (
                                                                 <div key={__index}>
-                                                                    {/* <div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
+                                                                    {<div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
                                                                         {typeof __column.name === 'function'
                                                                             ? __column.name(_row.deepMappedData)
                                                                             : __column.name
                                                                         }
-                                                                    </div> */}
+                                                                    </div>}
                                                                     {_row.deepMappedData.map((___row, ___index) => {
                                                                         const ___cell = __column.selector(___row, ___index, _index);
                                                                         return (
@@ -353,12 +343,12 @@ export default function DataTable(props) {
                                                                                             style={{ backgroundColor: 'orange' }}>
                                                                                             {columns(reportChain[2].name, 2).map((____column, ____index) => (
                                                                                                 <div key={____index}>
-                                                                                                    {/* <div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
+                                                                                                    {<div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
                                                                                                         {typeof ____column.name === 'function'
                                                                                                             ? ____column.name(___row.deepMappedData)
                                                                                                             : ____column.name
                                                                                                         }
-                                                                                                    </div> */}
+                                                                                                    </div>}
                                                                                                     {___row.deepMappedData.map((_____row, _____index) => {
                                                                                                         const _____cell = ____column.selector(_____row, _____index, _index);
                                                                                                         return (
@@ -396,12 +386,57 @@ export default function DataTable(props) {
                                                         </button>
                                                     </div>
                                                     : ''
+                                                } */}
+
+                                                </div>
+                                                {_row.deepMappedData &&
+                                                    <>
+                                                        <div className='relative flex justify-start items-center px-2 h-8 w-full bg-white'>
+                                                            {index === 1 &&
+                                                                <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                    {reportChain?.at(1)?.name}
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        {_row.deepMappedData.map((__row, __index) => {
+                                                            const __cell = column.selector(__row, __index);
+                                                            return (
+
+                                                                // <div key={__index} className='flex justify-start items-center px-2 h-8'
+                                                                //     style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px' }}>
+                                                                //     {__cell}
+                                                                // </div>
+
+                                                                <div key={__index}
+                                                                    style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px', backgroundColor: __row.selected ? '#d1ede7' : '' }}
+                                                                    className={(isEven(__index) ? 'bg-even_list_item' : 'bg-odd_list_item')
+                                                                        + ' flex justify-start items-center overflow-hidden px-2 h-8 cursor-pointer'}
+                                                                    data-__row_index={__index}
+                                                                    onMouseEnter={e => handleMouseEnter(e, `div[data-__row_index="${__index}"]`)}
+                                                                    onClick={e => changeRowSelection(__row.selected === true, __index)}
+                                                                >
+                                                                    <span style={{ backgroundColor: index === 0 ? INDICATORS.getColor(_cell) : '' }}
+                                                                        className={(index === 0 ? 'text-white' : index === 2 ? 'text-left' : 'text-right') + ' w-full'}
+                                                                    >
+                                                                        {__cell}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                        <div className='relative flex justify-start items-center p-6 h-8 w-full bg-white'>
+                                                            {index === 1 &&
+                                                                <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                    <DrilldownButton mappedData={mappedData} drilldown={drilldown} />
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </>
                                                 }
-                                            </div>
+                                            </React.Fragment>
                                         )
                                 })
                                 }
-                                <div className='absolute flex justify-end items-center overflow-hidden px-2 bg-NavBar_backgroundColor'
+                                <div className='absolute flex justify-end items-center overflow-hidden px-2 h-8 bg-NavBar_backgroundColor'
                                     style={{
                                         width: '100%',
                                         minHeight: '20px',
@@ -410,9 +445,9 @@ export default function DataTable(props) {
                                         bottom: 0
                                     }}
                                 >
-                                    {columnTotal(mappedData, column)}
+                                    {columnTotal(mappedData, column, index)}
                                 </div>
-                            </div>
+                            </div >
                         )
                     })}
             </div>

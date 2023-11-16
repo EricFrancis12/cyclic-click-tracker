@@ -11,7 +11,7 @@ export default function Checkbox(props) {
     }
 
     return (
-        <span className='text-right w-full cursor-pointer'>
+        <span className='flex items center w-full h-full cursor-pointer'>
             <input onChange={handleChange}
                 type='checkbox'
                 checked={_checked ?? checked}
