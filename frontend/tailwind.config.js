@@ -16,7 +16,8 @@ module.exports = {
         'even_list_item': '#ffffff',
         'odd_list_item': '#e5e5e5',
         'list_item_border': '#f6f6f6',
-        'data_table_row_hovered': '#e7f6f3'
+        'data_table_row_hovered': '#e7f6f3',
+        'popup_header': '#314a77'
       }
     },
   },

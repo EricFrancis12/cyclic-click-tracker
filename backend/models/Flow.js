@@ -1,28 +1,35 @@
 const { FL } = require('../../frontend/src/config/config.json').suffixes;
+const FlowConfig = require('../../frontend/src/config/Flow.config.json');
+const { BUILT_IN, SAVED, URL } = FlowConfig.types;
+const { BUILT_IN_FL, URL_FL } = FlowConfig.static_ids;
+const { DEFAULT, RULE } = FlowConfig.routeTypes;
 
 
 
 class Flow {
     constructor(props) {
-        const { landingPages = [], offers = [], type = Flow.types.BUILT_IN } = props;
+        const { name, type = BUILT_IN, defaultRoute, rulesRoutes, tags } = props;
 
         this.type = type;
 
-        if (type === Flow.types.SAVED) {
-            throw new Error('Saved Flows are not yet implimented.');
+        if (type === SAVED || type === URL) {
+            throw new Error('Saved and URL Flows are not yet implimented.');
         } else {
-            this.type = Flow.types.BUILT_IN;
-            this._id = `${Flow.types.BUILT_IN}_${FL}`;
-            this.defaultPath = Flow.makePath({ landingPages, offers, pathType: Flow.pathTypes.DEFAULT });
-            this.rulePaths = [];
+            this.name = name ?? '';
+            this.type = BUILT_IN;
+            this._id = BUILT_IN_FL;
+            this.defaultRoute = defaultRoute;
+            this.rulesRoutes = rulesRoutes ?? [];
+
+            this.tags = tags ?? [];
         }
     }
 }
 
 
 
-Flow.makePath = function (props) {
-    const { landingPages, offers, pathType, rules } = props;
+Flow.makePath = function (path) {
+    const { landingPages, offers, pathType, rules, active = true } = path;
 
     const _landingPages = landingPages.map(landingPage => {
         return ({
@@ -41,6 +48,7 @@ Flow.makePath = function (props) {
     return {
         type: pathType,
         weight: 100,
+        active,
         landingPages: _landingPages,
         offers: _offers,
         rules
@@ -50,13 +58,11 @@ Flow.makePath = function (props) {
 
 
 Flow.types = {
-    BUILT_IN: 'BUILT_IN',
-    SAVED: 'SAVED'
+    ...FlowConfig.types
 };
 
-Flow.pathTypes = {
-    DEFAULT: 'DEFAULT',
-    RULE: 'RULE'
+Flow.routeTypes = {
+    ...FlowConfig.routeTypes
 };
 
 

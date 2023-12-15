@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import Button from './Button';
+import Button from '../Button';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default function RefreshButton() {

@@ -5,12 +5,13 @@ const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars, extract_uuid } = require('../utils/utils');
 const { OF } = require('../../frontend/src/config/config.json').suffixes;
+const OfferConfig = require('../../frontend/src/config/Offer.config.json');
 
 
 
 class Offer {
     constructor(props) {
-        const { name, affiliateNetwork, url = '', appendDefaultNewOfferString = false, payout = 0, jsonData } = props;
+        const { name, affiliateNetwork, url = '', appendDefaultNewOfferString = false, payout = 0, tags, jsonData } = props;
 
         if (!jsonData) {
             const uuid = extract_uuid(affiliateNetwork._id);
@@ -30,6 +31,8 @@ class Offer {
             this.payout = parseFloat(payout) >= 0
                 ? parseFloat(payout.toFixed(2))
                 : 0;
+
+            this.tags = tags ?? [];
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];
@@ -110,7 +113,7 @@ Offer.create = function () {
 
 
 Offer.rotationOptions = {
-    RANDOM: 'RANDOM'
+    ...OfferConfig.rotationOptions
 };
 
 

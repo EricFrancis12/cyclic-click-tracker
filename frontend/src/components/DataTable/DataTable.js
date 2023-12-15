@@ -13,15 +13,15 @@ import { replaceNonsense, stringIncludes, isEven } from '../../utils/utils';
 export const INDICATORS = {
     POSITIVE: {
         name: '+',
-        color: 'green'
+        color: '#17a689'
     },
     NEGATIVE: {
         name: '-',
-        color: 'red'
+        color: '#e05465'
     },
     NEUTRAL: {
-        name: '=',
-        color: 'grey'
+        name: '·',
+        color: '#ccc'
     },
     getColor: (name) => {
         let result;
@@ -102,141 +102,157 @@ export default function DataTable(props) {
         setSelectAllChecked(!value);
     }
 
-    function handleChevronToggle(active, row, index, activeItem) {
+    function handleChevronToggle(active, row, index, parentIndex, reportChainIndex = 1) {
+        if (reportChainIndex == null || reportChainIndex > 2) return;
+
         const deepMappedData = active
-            ? mapClicks({ clicks: row.clicks, data, activeItem, timeframe })
+            ? mapClicks({
+                clicks: row.clicks,
+                data,
+                activeItem: reportChain[reportChainIndex],
+                timeframe
+            })
             : null;
 
         const newMappedData = structuredClone(mappedData);
-        newMappedData[index].deepMappedData = deepMappedData;
+
+        if (reportChainIndex === 1) {
+            newMappedData[index].deepMappedData = deepMappedData;
+        } else if (reportChainIndex === 2) {
+            newMappedData[index].deepMappedData[parentIndex].deepMappedData = deepMappedData;
+        } else {
+            return;
+        }
 
         setMappedData(newMappedData);
         setSelectAllChecked(false);
     }
 
-    const columns = (activeItemName, reportChainIndex = 0) => [
-        {
-            name: ' ',
-            selector: (row) => {
-                const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
-                const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
-                return totalRevenue > totalCost
-                    ? INDICATORS.POSITIVE.name
-                    : totalRevenue === totalCost
-                        ? INDICATORS.NEUTRAL.name
-                        : INDICATORS.NEGATIVE.name;
-            }
-        },
-        (reportChain?.at(reportChainIndex + 1)?.name
-            ? {
+    const columns = (activeItemName, reportChainIndex = 0) => {
+        return [
+            {
                 name: ' ',
-                selector: (row, index) => (
-                    <ChevronToggle reportChain={reportChain}
-                        callback={(active) => handleChevronToggle(active, row, index, reportChain[reportChainIndex + 1])} />
-                )
-            }
-            : {
-                name: () => {
-                    return !loading && reportChainIndex === 0 && mappedData.length > 0
-                        ? <Checkbox onChange={e => toggleSelectAll(e.target.dataset.checked)} checked={selectAllChecked} />
-                        : '';
-                },
-                selector: (row, index) => {
-                    return !loading && reportChainIndex === 0
-                        ? <Checkbox onChange={e => changeRowSelection(e.target.dataset.checked, index)} checked={row.selected} />
-                        : '';
+                selector: (row) => {
+                    const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
+                    const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
+                    return totalRevenue > totalCost
+                        ? INDICATORS.POSITIVE.name
+                        : totalRevenue === totalCost
+                            ? INDICATORS.NEUTRAL.name
+                            : INDICATORS.NEGATIVE.name;
+                }
+            },
+            (reportChain?.at(reportChainIndex + 1)?.name
+                ? {
+                    name: ' ',
+                    selector: (row, index, parentIndex, reportChainIndex) => (
+                        <ChevronToggle reportChain={reportChain}
+                            callback={(active) => handleChevronToggle(active, row, index, parentIndex, reportChainIndex)} />
+                    )
+                }
+                : {
+                    name: () => {
+                        return !loading && mappedData.length > 0
+                            ? <Checkbox onChange={e => toggleSelectAll(e.target.dataset.checked)} checked={selectAllChecked} />
+                            : '';
+                    },
+                    selector: (row, index) => {
+                        return !loading
+                            ? <Checkbox onChange={e => changeRowSelection(e.target.dataset.checked, index)} checked={row.selected} />
+                            : '';
+                    }
+                }
+            ),
+            {
+                name: activeItemName,
+                selector: (row) => row.name
+            },
+            {
+                name: 'Visits',
+                selector: (row) => row.clicks.length
+            },
+            {
+                name: 'Clicks',
+                selector: (row) => row.clicks.filter(click => click.lpClick === true).length
+            },
+            {
+                name: 'Conversions',
+                selector: (row) => row.clicks.filter(click => click.conversion === true).length
+            },
+            {
+                name: 'Revenue',
+                selector: (row) => row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0)
+            },
+            {
+                name: 'Cost',
+                selector: (row) => row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0)
+            },
+            {
+                name: 'Profit',
+                selector: (row) => {
+                    const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
+                    const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
+                    return totalRevenue - totalCost;
+                }
+            },
+            {
+                name: 'CPV',
+                selector: (row) => {
+                    const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
+                    const totalVisits = row.clicks.length;
+                    return replaceNonsense(totalCost / totalVisits, 0);
+                }
+            },
+            {
+                name: 'CPC',
+                selector: (row) => {
+                    const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
+                    const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
+                    return replaceNonsense(totalCost / totalClicks, 0);
+                }
+            },
+            {
+                name: 'CTR',
+                selector: (row) => {
+                    const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
+                    const totalVisits = row.clicks.length;
+                    return replaceNonsense(totalClicks / totalVisits, 0) * 100 + '%';
+                }
+            },
+            {
+                name: 'CV',
+                selector: (row) => {
+                    const totalConversions = row.clicks.filter(click => click.conversion === true).length;
+                    const totalVisits = row.clicks.length;
+                    return replaceNonsense(totalConversions / totalVisits, 0) * 100 + '%';
+                }
+            },
+            {
+                name: 'ROI',
+                selector: (row) => {
+                    const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
+                    const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
+                    return replaceNonsense((totalRevenue - totalCost) / totalCost, 0) * 100 + '%';
+                }
+            },
+            {
+                name: 'EPV',
+                selector: (row) => {
+                    const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
+                    const totalVisits = row.clicks.length;
+                    return replaceNonsense(totalRevenue / totalVisits, 0);
+                }
+            },
+            {
+                name: 'EPC',
+                selector: (row) => {
+                    const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
+                    const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
+                    return replaceNonsense(totalRevenue / totalClicks, 0);
                 }
             }
-        ),
-        {
-            name: activeItemName,
-            selector: (row) => row.name
-        },
-        {
-            name: 'Visits',
-            selector: (row) => row.clicks.length
-        },
-        {
-            name: 'Clicks',
-            selector: (row) => row.clicks.filter(click => click.lpClick === true).length
-        },
-        {
-            name: 'Conversions',
-            selector: (row) => row.clicks.filter(click => click.conversion === true).length
-        },
-        {
-            name: 'Revenue',
-            selector: (row) => row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0)
-        },
-        {
-            name: 'Cost',
-            selector: (row) => row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0)
-        },
-        {
-            name: 'Profit',
-            selector: (row) => {
-                const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
-                const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
-                return totalRevenue - totalCost;
-            }
-        },
-        {
-            name: 'CPV',
-            selector: (row) => {
-                const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
-                const totalVisits = row.clicks.length;
-                return replaceNonsense(totalCost / totalVisits, 0);
-            }
-        },
-        {
-            name: 'CPC',
-            selector: (row) => {
-                const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
-                const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
-                return replaceNonsense(totalCost / totalClicks, 0);
-            }
-        },
-        {
-            name: 'CTR',
-            selector: (row) => {
-                const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
-                const totalVisits = row.clicks.length;
-                return replaceNonsense(totalClicks / totalVisits, 0) * 100 + '%';
-            }
-        },
-        {
-            name: 'CV',
-            selector: (row) => {
-                const totalConversions = row.clicks.filter(click => click.conversion === true).length;
-                const totalVisits = row.clicks.length;
-                return replaceNonsense(totalConversions / totalVisits, 0) * 100 + '%';
-            }
-        },
-        {
-            name: 'ROI',
-            selector: (row) => {
-                const totalCost = row.clicks.reduce((totalCost, click) => totalCost + (click.cost ?? 0), 0);
-                const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
-                return replaceNonsense((totalRevenue - totalCost) / totalCost, 0) * 100 + '%';
-            }
-        },
-        {
-            name: 'EPV',
-            selector: (row) => {
-                const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
-                const totalVisits = row.clicks.length;
-                return replaceNonsense(totalRevenue / totalVisits, 0);
-            }
-        },
-        {
-            name: 'EPC',
-            selector: (row) => {
-                const totalRevenue = row.clicks.reduce((totalRevenue, click) => totalRevenue + (click.revenue ?? 0), 0);
-                const totalClicks = row.clicks.filter(click => click.lpClick === true).length;
-                return replaceNonsense(totalRevenue / totalClicks, 0);
-            }
-        }
-    ];
+        ];
+    }
 
     function columnTotal(mappedData, column, index) {
         if (index <= 2) return '';
@@ -252,195 +268,195 @@ export default function DataTable(props) {
             + (isPercentage ? '%' : '');
     }
 
+    // setTimeout()
+
     return (
-        <div ref={dataTableRef} style={{ width: 'auto', height: dataTableRef.fillRestOfScreen() }}>
+        <div ref={dataTableRef} style={{ height: dataTableRef.fillRestOfScreen() }}>
             <div className='relative grid grid-flow-col whitespace-nowrap overflow-x-scroll h-full bg-even_list_item'>
                 {loading
-                    ? <div className='flex justify-center items-center' style={{ height: '100%', width: '100%' }}>
+                    ? <div className='flex justify-center items-center h-full w-full'>
                         <Spinner />
                     </div>
                     : columns(activeItemName).map((column, index) => {
                         const id = crypto.randomUUID();
                         return (
-                            <div key={index} id={id} className='relative pb-16 first:w-6'>
-                                <div className='absolute h-full' style={{ right: 0, width: '1px', backgroundColor: 'lightgray' }}>
+                            <div key={index} id={id} className='relative pb-16 w-full'
+                                style={{ width: index === 0 ? '15px' : index === 1 ? '30px' : '' }}>
+                                <div className='absolute h-full' style={{ right: 0, width: '1px', backgroundColor: index !== 0 ? 'lightgray' : '' }}>
                                     <div onMouseDown={index <= 1 ? null : e => handleMouseDown(e, id)}
                                         className={(index <= 1 ? '' : 'cursor-e-resize hover:opacity-100') + ' h-full opacity-0'}
                                         style={{ border: 'dashed black 1px' }} />
                                 </div>
                                 <div className='flex justify-start items-center overflow-hidden px-2 h-8 text-white bg-NavBar_backgroundColor'
-                                    style={{ minWidth: index !== 1 ? '100px' : '30px', borderLeft: 'solid lightgray 1px' }}>
+                                    style={{ minWidth: index >= 2 ? '110px' : '', borderLeft: 'solid lightgray 1px' }}>
                                     {typeof column.name === 'function'
                                         ? column.name(mappedData)
                                         : column.name
                                     }
                                 </div>
-                                {mappedData.map((_row, _index) => {
-                                    const _cell = column.selector(_row, _index);
-                                    return searchQuery && !stringIncludes(_row.name, searchQuery)
-                                        ? ''
-                                        : (
-                                            <React.Fragment key={_index}>
-                                                <div style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px', backgroundColor: _row.selected ? '#d1ede7' : '' }}
-                                                    className={(isEven(_index) ? 'bg-even_list_item' : 'bg-odd_list_item')
-                                                        + ' flex justify-start items-center overflow-hidden px-2 h-8 cursor-pointer'}
-                                                    data-_row_index={_index}
-                                                    onMouseEnter={e => handleMouseEnter(e, `div[data-_row_index="${_index}"]`)}
-                                                    onClick={e => changeRowSelection(_row.selected === true, _index)}
-                                                >
-                                                    <span style={{ backgroundColor: index === 0 ? INDICATORS.getColor(_cell) : '' }}
-                                                        className={(index === 0 ? 'text-white' : index === 2 ? 'text-left' : 'text-right') + ' w-full'}
+                                {
+                                    mappedData.map((_row, _index) => {
+                                        const _cell_id = `col_${index}_index_${_index}`;
+                                        const _cell = column.selector(_row, _index);
+                                        return searchQuery && !stringIncludes(_row.name, searchQuery)
+                                            ? ''
+                                            : (
+                                                <React.Fragment key={_index}>
+                                                    <div id={_cell_id}
+                                                        style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px', backgroundColor: _row.selected ? '#d1ede7' : '' }}
+                                                        className={(isEven(_index) ? 'bg-even_list_item' : 'bg-odd_list_item')
+                                                            + (index <= 1 ? '' : ' px-2')
+                                                            + ' flex justify-center items-center overflow-hidden h-8 cursor-pointer'}
+                                                        data-_row_index={_index}
+                                                        onMouseEnter={e => handleMouseEnter(e, `div[data-_row_index="${_index}"]`)}
+                                                        onClick={e => changeRowSelection(_row.selected === true, _index)}
                                                     >
-                                                        {_cell}
-                                                    </span>
-
-
-                                                    {/* {_row.deepMappedData && index === 0
-                                                    ? <div className='block'
-                                                        style={{
-                                                            left: 0,
-                                                            width: dataTableRef.width,
-                                                            backgroundColor: 'blueviolet'
-                                                        }}
-                                                    >
-                                                        <div className='p-4' />
-                                                        {reportChain[1].name}
-                                                        <div className='grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-hidden'
-                                                            style={{ backgroundColor: 'purple' }}>
-                                                            {columns(reportChain[1].name, 1).map((__column, __index) => (
-                                                                <div key={__index}>
-                                                                    {<div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
-                                                                        {typeof __column.name === 'function'
-                                                                            ? __column.name(_row.deepMappedData)
-                                                                            : __column.name
-                                                                        }
-                                                                    </div>}
-                                                                    {_row.deepMappedData.map((___row, ___index) => {
-                                                                        const ___cell = __column.selector(___row, ___index, _index);
-                                                                        return (
-                                                                            <div key={___index}>
-                                                                                <div className='flex justify-start items-center overflow-hidden'
-                                                                                    style={{ backgroundColor: INDICATORS.getColor(___cell) }}
-                                                                                >
-                                                                                    <span style={{ zIndex: 200, opacity: __index === 0 ? 0 : 100 }}>
-                                                                                        {___cell}
-                                                                                    </span>
+                                                        <span style={{ backgroundColor: index === 0 ? INDICATORS.getColor(_cell) : '' }}
+                                                            className={(index === 0 ? 'text-white ' : 'text-black ')
+                                                                + (index <= 1 ? 'justify-center ' : index === 2 ? 'justify-start ' : 'justify-end ')
+                                                                + ' flex items-center h-full w-full'}
+                                                        >
+                                                            {_cell}
+                                                        </span>
+                                                    </div>
+                                                    {_row.deepMappedData &&
+                                                        <>
+                                                            <div className='relative flex justify-start items-center px-2 h-8 w-full bg-white'>
+                                                                {index === 1 &&
+                                                                    <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                        {reportChain?.at(1)?.name}
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            {_row.deepMappedData.map((__row, __index) => {
+                                                                const __cell_id = `col_${index}__index_${__index}`;
+                                                                const __cell = column.selector(__row, __index, _index, 2);
+                                                                const prev__cell = columns(activeItemName, 1)[index - 1]?.selector(__row, __index, _index, 2);
+                                                                return (
+                                                                    <React.Fragment key={__index}>
+                                                                        <div id={__cell_id} style={{
+                                                                            borderTop: index >= 2 ? 'solid lightgray 1px' : '',
+                                                                            borderBottom: index >= 2 ? 'solid lightgray 1px' : '',
+                                                                            backgroundColor: __row.selected ? '#d1ede7' : ''
+                                                                        }}
+                                                                            className={(isEven(__index) ? 'bg-even_list_item' : 'bg-odd_list_item')
+                                                                                + (index <= 2 ? '' : ' px-2')
+                                                                                + ' flex justify-center items-center overflow-hidden h-8 cursor-pointer'}
+                                                                            data-__row_index={__index}
+                                                                            onMouseEnter={e => handleMouseEnter(e, `div[data-__row_index="${__index}"]`)}
+                                                                            onClick={e => changeRowSelection(__row.selected === true, __index)}
+                                                                        >
+                                                                            <span className={(index === 0 ? 'text-white ' : 'text-black ')
+                                                                                + (index === 0 ? 'justify-center ' : index === 2 ? 'justify-start ' : 'justify-end ')
+                                                                                + ' flex items-center h-full w-full'}
+                                                                            >
+                                                                                {index === 0
+                                                                                    ? ''
+                                                                                    : index === 1
+                                                                                        ? (
+                                                                                            <div className='flex justify-end items-center h-full'>
+                                                                                                <div className='flex justify-center items-center h-full text-white'
+                                                                                                    style={{ width: '15px', backgroundColor: index === 1 ? INDICATORS.getColor(prev__cell) : '' }}
+                                                                                                >
+                                                                                                    {prev__cell}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )
+                                                                                        : index === 2
+                                                                                            ? (
+                                                                                                <div className='flex justify-start items-center h-full'>
+                                                                                                    <div className='flex justify-center items-center px-2 h-full'
+                                                                                                        style={{ width: '30px', borderRight: 'solid lightgray 1px' }}>
+                                                                                                        {prev__cell}
+                                                                                                    </div>
+                                                                                                    <div className='px-2'>
+                                                                                                        {__cell}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )
+                                                                                            : __cell
+                                                                                }
+                                                                            </span>
+                                                                        </div>
+                                                                        {__row.deepMappedData &&
+                                                                            <>
+                                                                                <div className='relative flex justify-start items-center px-2 h-8 w-full bg-white'>
+                                                                                    {index === 2 &&
+                                                                                        <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                                            {reportChain?.at(2)?.name}
+                                                                                        </div>
+                                                                                    }
                                                                                 </div>
-
-
-
-                                                                                {___row.deepMappedData && __index === 0
-                                                                                    ? <div className='block'
-                                                                                        style={{
-                                                                                            left: 0,
-                                                                                            width: dataTableRef.width,
-                                                                                            backgroundColor: 'yellow',
+                                                                                {__row.deepMappedData.map((___row, ___index) => {
+                                                                                    const ___cell = column.selector(___row, ___index, null, null);
+                                                                                    const ___cell_id = `col_${index}___index_${___index}`;
+                                                                                    const prev___cell = columns(activeItemName, 2)[index - 2]?.selector(___row, ___index, null, null);
+                                                                                    return (
+                                                                                        <div key={___index} style={{
+                                                                                            borderTop: index >= 2 ? 'solid lightgray 1px' : '',
+                                                                                            borderBottom: index >= 2 ? 'solid lightgray 1px' : '',
+                                                                                            backgroundColor: ___row.selected ? '#d1ede7' : ''
                                                                                         }}
-                                                                                    >
-                                                                                        <div className='p-4' />
-                                                                                        {reportChain[2].name}
-                                                                                        <div className='grid grid-flow-col auto-cols-fr gap-4 whitespace-nowrap overflow-hidden'
-                                                                                            style={{ backgroundColor: 'orange' }}>
-                                                                                            {columns(reportChain[2].name, 2).map((____column, ____index) => (
-                                                                                                <div key={____index}>
-                                                                                                    {<div className='flex justify-start items-center overflow-hidden' style={{ minHeight: '20px' }}>
-                                                                                                        {typeof ____column.name === 'function'
-                                                                                                            ? ____column.name(___row.deepMappedData)
-                                                                                                            : ____column.name
-                                                                                                        }
-                                                                                                    </div>}
-                                                                                                    {___row.deepMappedData.map((_____row, _____index) => {
-                                                                                                        const _____cell = ____column.selector(_____row, _____index, _index);
-                                                                                                        return (
-                                                                                                            <div key={_____index}>
-                                                                                                                <div className='flex justify-start items-center overflow-hidden'
-                                                                                                                    style={{ backgroundColor: INDICATORS.getColor(_____cell) }}
+                                                                                            className={(isEven(___index) ? 'bg-even_list_item' : 'bg-odd_list_item')
+                                                                                                + (index <= 2 ? '' : ' px-2')
+                                                                                                + ' flex justify-center items-center overflow-hidden h-8 cursor-pointer'}
+                                                                                            data-___row_index={___index}
+                                                                                            onMouseEnter={e => handleMouseEnter(e, `div[data-___row_index="${___index}"]`)}
+                                                                                            onClick={e => changeRowSelection(_row.selected === true, ___index)}
+                                                                                        >
+                                                                                            <span className={(index === 0 ? 'text-white ' : 'text-black ')
+                                                                                                + (index === 0 ? 'justify-center ' : index === 2 ? 'justify-start ' : 'justify-end ')
+                                                                                                + ' flex items-center h-full w-full'}
+                                                                                            >
+                                                                                                {index <= 1
+                                                                                                    ? ''
+                                                                                                    : index === 2
+                                                                                                        ? (
+                                                                                                            <div className='flex justify-end items-center h-full'>
+                                                                                                                <div className='flex justify-center items-center h-full text-white'
+                                                                                                                    style={{ width: '15px', backgroundColor: index === 2 ? INDICATORS.getColor(prev___cell) : '' }}
                                                                                                                 >
-                                                                                                                    <span style={{ zIndex: 200, opacity: ____index === 0 ? 0 : 100 }}>
-                                                                                                                        {_____cell}
-                                                                                                                    </span>
+                                                                                                                    {prev___cell}
+                                                                                                                </div>
+                                                                                                                <div className='px-2'>
+                                                                                                                    {___cell}
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         )
-                                                                                                    })}
-                                                                                                </div>
-                                                                                            ))}
+                                                                                                        : ___cell
+                                                                                                }
+                                                                                            </span>
                                                                                         </div>
-                                                                                        <button onClick={e => console.log(`Drilldown: ${_row.deepMappedData[__index]?.name} not yet implimented.`)}>
-                                                                                            {'Drilldown: ' + _row.deepMappedData[__index]?.name}
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    : ''
-                                                                                }
-
-
-
-                                                                            </div>
-                                                                        )
-                                                                    })}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <button onClick={e => console.log(`Drilldown: ${mappedData[index]?.name} not yet implimented.`)}>
-                                                            {'Drilldown: ' + mappedData[index]?.name}
-                                                        </button>
-                                                    </div>
-                                                    : ''
-                                                } */}
-
-                                                </div>
-                                                {_row.deepMappedData &&
-                                                    <>
-                                                        <div className='relative flex justify-start items-center px-2 h-8 w-full bg-white'>
-                                                            {index === 1 &&
-                                                                <div className='absolute bg-white' style={{ zIndex: 20 }}>
-                                                                    {reportChain?.at(1)?.name}
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                        {_row.deepMappedData.map((__row, __index) => {
-                                                            const __cell = column.selector(__row, __index);
-                                                            return (
-
-                                                                // <div key={__index} className='flex justify-start items-center px-2 h-8'
-                                                                //     style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px' }}>
-                                                                //     {__cell}
-                                                                // </div>
-
-                                                                <div key={__index}
-                                                                    style={{ borderTop: 'solid lightgray 1px', borderBottom: 'solid lightgray 1px', backgroundColor: __row.selected ? '#d1ede7' : '' }}
-                                                                    className={(isEven(__index) ? 'bg-even_list_item' : 'bg-odd_list_item')
-                                                                        + ' flex justify-start items-center overflow-hidden px-2 h-8 cursor-pointer'}
-                                                                    data-__row_index={__index}
-                                                                    onMouseEnter={e => handleMouseEnter(e, `div[data-__row_index="${__index}"]`)}
-                                                                    onClick={e => changeRowSelection(__row.selected === true, __index)}
-                                                                >
-                                                                    <span style={{ backgroundColor: index === 0 ? INDICATORS.getColor(_cell) : '' }}
-                                                                        className={(index === 0 ? 'text-white' : index === 2 ? 'text-left' : 'text-right') + ' w-full'}
-                                                                    >
-                                                                        {__cell}
-                                                                    </span>
-                                                                </div>
-                                                            )
-                                                        })}
-                                                        <div className='relative flex justify-start items-center p-6 h-8 w-full bg-white'>
-                                                            {index === 1 &&
-                                                                <div className='absolute bg-white' style={{ zIndex: 20 }}>
-                                                                    <DrilldownButton mappedData={mappedData} drilldown={drilldown} />
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    </>
-                                                }
-                                            </React.Fragment>
-                                        )
-                                })
+                                                                                    )
+                                                                                })}
+                                                                                <div className='relative flex justify-start items-center p-6 h-8 w-full bg-white'>
+                                                                                    {index === 2 &&
+                                                                                        <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                                            <DrilldownButton text={__row.name} cell_id={`col_${1}__index_${0}`} mappedData={mappedData} drilldown={drilldown} />
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            </>
+                                                                        }
+                                                                    </React.Fragment>
+                                                                )
+                                                            })}
+                                                            <div className='relative flex justify-start items-center p-6 h-8 w-full bg-white'>
+                                                                {index === 1 &&
+                                                                    <div className='absolute bg-white' style={{ zIndex: 20 }}>
+                                                                        <DrilldownButton text={_row.name} cell_id={`col_${0}_index_${0}`} mappedData={mappedData} drilldown={drilldown} />
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </>
+                                                    }
+                                                </React.Fragment>
+                                            )
+                                    })
                                 }
-                                <div className='absolute flex justify-end items-center overflow-hidden px-2 h-8 bg-NavBar_backgroundColor'
+                                < div className='absolute flex justify-end items-center overflow-hidden px-2 h-8 w-full text-white bg-NavBar_backgroundColor'
                                     style={{
-                                        width: '100%',
                                         minHeight: '20px',
-                                        color: 'white',
                                         borderLeft: 'solid lightgray 1px',
                                         bottom: 0
                                     }}
@@ -450,7 +466,7 @@ export default function DataTable(props) {
                             </div >
                         )
                     })}
-            </div>
+            </div >
         </div >
     )
 }

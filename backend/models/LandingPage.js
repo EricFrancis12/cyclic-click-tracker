@@ -6,12 +6,13 @@ const inquirer = require('inquirer');
 
 const { formatTime, removeIllegalChars } = require('../utils/utils');
 const { LP } = require('../../frontend/src/config/config.json').suffixes;
+const LandingPageConfig = require('../../frontend/src/config/LandingPage.config.json');
 
 
 
 class LandingPage {
     constructor(props) {
-        const { name, url = '', _id, jsonData } = props;
+        const { name, url = '', _id, tags, jsonData } = props;
 
         if (!jsonData) {
             this._id = _id || `${removeIllegalChars(name)}_${crypto.randomUUID()}_${LP}`;
@@ -21,6 +22,8 @@ class LandingPage {
 
             this.name = name || this._id;
             this.url = url;
+
+            this.tags = tags ?? [];
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];
@@ -66,13 +69,13 @@ LandingPage.create = function () {
 
 
 LandingPage.rotationOptions = {
-    RANDOM: 'RANDOM'
+    ...LandingPageConfig.rotationOptions
 };
 
 LandingPage.DIRECT_LINKING_LP = {
     name: 'Direct Linking',
     url: '',
-    _id: `DIRECT_LINKING_${LP}`
+    _id: LandingPageConfig.static_ids.DIRECT_LINKING_LP
 };
 
 

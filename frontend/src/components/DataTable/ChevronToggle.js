@@ -17,7 +17,7 @@ export default function ChevronToggle(props) {
     }
 
     return (
-        <span className='flex items center w-full h-full cursor-pointer'>
+        <span className='flex justify-center items-center w-full h-full cursor-pointer'>
             <FontAwesomeIcon onClick={e => handleClick(e)} icon={active ? faChevronDown : faChevronRight} />
         </span>
     )

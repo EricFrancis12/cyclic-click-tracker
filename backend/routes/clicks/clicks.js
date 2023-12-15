@@ -10,11 +10,6 @@ const auth = require('../../middleware/auth/auth');
 
 
 
-router.get('/test', (req, res) => {
-    console.log(req.headers);
-    res.status(200).json(req.headers);
-});
-
 router.get('/', auth, async (req, res) => {
     // get all clicks in db
     try {

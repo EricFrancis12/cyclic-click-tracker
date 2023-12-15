@@ -11,7 +11,7 @@ const { TS } = require('../../frontend/src/config/config.json').suffixes;
 
 class TrafficSource {
     constructor(props) {
-        const { name, postbackUrl = '', tokens = [], jsonData } = props;
+        const { name, postbackUrl = '', tokens = [], tags, jsonData } = props;
 
         if (!jsonData) {
             this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${TS}`;
@@ -22,6 +22,8 @@ class TrafficSource {
             this.name = name || this._id;
             this.postbackUrl = postbackUrl;
             this.tokens = tokens;
+
+            this.tags = tags ?? [];
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];

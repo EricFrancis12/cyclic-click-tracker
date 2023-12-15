@@ -1,0 +1,19 @@
+{
+    "types": {
+        "BUILT_IN": "BUILT_IN",
+        "SAVED": "SAVED",
+        "URL": "URL"
+    },
+    "routeTypes": {
+        "DEFAULT": "DEFAULT",
+        "RULE": "RULE"
+    },
+    "static_ids": {
+        "BUILT_IN_FL": "BUILT_IN_FL",
+        "URL_FL": "URL_FL"
+    },
+    "logicalRelations": {
+        "AND": "AND",
+        "OR": "OR"
+    }
+}

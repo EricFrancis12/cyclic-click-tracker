@@ -45,13 +45,16 @@ class Click {
         this.viewRedirectUrl = viewRedirectUrl;
         this.clickRedirectUrl = isDirectLink ? this.viewRedirectUrl : null;
 
+        this.ip = req.ip ?? UNKNOWN;
+        this.userAgent = req.headers['user-agent'] ?? UNKNOWN;
+        
         this.language = req.headers['accept-language'] ?? req.lang ?? UNKNOWN;
-        this.city = null ?? UNKNOWN;
-        this.region = null ?? UNKNOWN;
         this.country = null ?? UNKNOWN;
+        this.region = null ?? UNKNOWN;
+        this.city = null ?? UNKNOWN;
 
         this.isp = null ?? UNKNOWN;
-        this.carriers = null ?? UNKNOWN;
+        this.mobileCarrier = null ?? UNKNOWN;
         this.connectionType = null ?? UNKNOWN;
 
         this.deviceModel = null ?? UNKNOWN;
@@ -64,9 +67,6 @@ class Click {
 
         this.browserName = null ?? UNKNOWN;
         this.browserVersion = null ?? UNKNOWN;
-
-        this.ip = req.ip ?? UNKNOWN;
-        this.userAgent = req.headers['user-agent'] ?? UNKNOWN;
     }
 
     recordClick(props) {

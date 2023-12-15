@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { DISABLE_AUTH } from '../layouts/AuthLayout';
+import useClicksMemo from '../hooks/useClicksMemo';
 
 const AuthContext = React.createContext();
 
@@ -13,6 +14,8 @@ export function AuthProvider({ children }) {
     const [data, setData] = useState([]);
     const [clicks, setClicks] = useState([]);
 
+    const clicksMemo = useClicksMemo(clicks);
+    
     const fetchingData = useRef(false);
 
     useEffect(() => {
@@ -115,6 +118,7 @@ export function AuthProvider({ children }) {
     const value = {
         data,
         clicks,
+        clicksMemo,
         fetchData,
         loggedIn,
         login,

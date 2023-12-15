@@ -9,13 +9,14 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const { arrayFromObject, formatTime, removeIllegalChars, weightedRandomlySelectItem, extract_uuid } = require('../utils/utils');
+const { isObject } = require('../utils/utils');
 const { CA } = require('../../frontend/src/config/config.json').suffixes;
 
 
 
 class Campaign {
     constructor(props) {
-        const { name, trafficSource, landingPageRotation, offerRotation, flow, jsonData } = props;
+        const { name, trafficSource, landingPageRotation, offerRotation, flow, tags, geoName, jsonData } = props;
 
         if (!jsonData) {
             this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${CA}`;
@@ -28,10 +29,44 @@ class Campaign {
             this.landingPageRotation = landingPageRotation;
             this.offerRotation = offerRotation;
             this.flow = flow;
+
+            this.tags = tags ?? [];
+            this.geoName = geoName;
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];
             }
+        }
+    }
+
+    update(jsonData) {
+        if (!jsonData || !isObject(jsonData)) throw new Error('No data argument specified.');
+
+        for (const key in jsonData) {
+            if (this[key] !== undefined) {
+                this[key] = jsonData[key];
+            }
+        }
+    }
+
+    save(jsonData = this) {
+        try {
+            const filePath = path.resolve(__dirname, `../data/campaigns/${this._id}/${this.fileName}`);
+            fs.writeFileSync(filePath, json.stringify(jsonData, null, 4));
+        } catch (err) {
+            throw new Error('Error saving campaign');
+        }
+    }
+
+    updateAndSave(jsonData) {
+        this.update(jsonData);
+        this.save();
+    }
+
+    delete() {
+        const jsonFilePath = path.resolve(__dirname, `../data/campaigns/${this._id}/${this.fileName}`);
+        if (fs.existsSync(jsonFilePath)) {
+            fs.unlinkSync(jsonFilePath);
         }
     }
 

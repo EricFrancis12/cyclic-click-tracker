@@ -34,6 +34,10 @@ export function stringIncludes(string, substring) {
     return string?.toUpperCase()?.includes(substring?.toUpperCase());
 }
 
+export function removeDupes(array) {
+    return [...new Set(array)];
+}
+
 export function shallowFlatten(array) {
     let result = [];
     array.forEach(item => {
@@ -56,6 +60,26 @@ export function arrayOf(item, length = 1) {
         result.push(structuredClone(item));
     }
     return result;
+}
+
+export function swapArrayElementsPerCondition(array, condition, options) {
+    const { direction = 'before', matchAll = false } = options;
+
+    const copyArray = [...array];
+    for (let i = 0; i < array.length; i++) {
+        if (condition(array[i], i) !== true) continue;
+
+        if (direction === 'before') {
+            if (i === 0) continue;
+            [copyArray[i], copyArray[i - 1]] = [copyArray[i - 1], copyArray[i]];
+        } else if (direction === 'after') {
+            if (i === array.length - 1) continue;
+            [copyArray[i], copyArray[i + 1]] = [copyArray[i + 1], copyArray[i]];
+        }
+
+        if (!matchAll) break;
+    }
+    return copyArray;
 }
 
 export function makeDate(year, month, day, hour, min, sec, ms) {

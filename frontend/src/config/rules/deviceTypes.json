@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Console"
+    },
+    {
+        "name": "Desktop"
+    },
+    {
+        "name": "EReader"
+    },
+    {
+        "name": "MediaHub"
+    },
+    {
+        "name": "Mobile"
+    },
+    {
+        "name": "SmallScreen"
+    },
+    {
+        "name": "SmartPhone"
+    },
+    {
+        "name": "SmartWatch"
+    },
+    {
+        "name": "Tablet"
+    },
+    {
+        "name": "TV"
+    }
+]

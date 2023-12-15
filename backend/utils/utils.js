@@ -1,5 +1,9 @@
 
 
+function isObject(any) {
+    return any != null && typeof any === 'object';
+}
+
 function arrayFromObject(object) {
     const result = [];
 
@@ -55,6 +59,7 @@ function extract_uuid(_id) {
 
 
 module.exports = {
+    isObject,
     arrayFromObject,
     randomlySelectItem,
     weightedRandomlySelectItem,

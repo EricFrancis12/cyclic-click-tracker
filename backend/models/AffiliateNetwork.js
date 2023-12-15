@@ -11,7 +11,7 @@ const { AN } = require('../../frontend/src/config/config.json').suffixes;
 
 class AffiliateNetwork {
     constructor(props) {
-        const { name, defaultNewOfferString = '&REPLACE={click_id}', jsonData } = props;
+        const { name, defaultNewOfferString = '&REPLACE={click_id}',tags, jsonData } = props;
 
         if (!jsonData) {
             this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${AN}`;
@@ -20,6 +20,8 @@ class AffiliateNetwork {
             this.timestampFormatted = formatTime(this.timestamp);
             this.name = name || this._id;
             this.defaultNewOfferString = defaultNewOfferString;
+
+            this.tags = tags ?? [];
         } else {
             for (const key in jsonData) {
                 this[key] = jsonData[key];

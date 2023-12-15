@@ -24,16 +24,33 @@ export function mapClicks({ clicks, data, activeItem, timeframe }, backfill) {
         const click = clicksInTimeframe[i];
         const filteredResult = results.find(result => result.clickProp === click[clickProp]);
 
-        const dataItem = (
+        let dataItem = (
             savedDataItems?.find((_dataItem) => _dataItem._id === click[clickProp])
-            // below is a fix for if the click doesn't have a ".affiliateNetwork_id" property.
-            // we are simply searching for an affiliateNetwork that contains an "offer._id" matching "click.offer_id":
+            // Below is a fix for if the click doesn't have a ".affiliateNetwork_id" property.
+            // We are simply searching for an affiliateNetwork that contains an "offer._id" matching "click.offer_id":
             ?? (name === ITEM_NAMES.AFFILIATE_NETWORKS
                 ? data.affiliateNetworks?.find((affiliateNetwork) =>
                     affiliateNetwork.offers.some((offer) => offer._id === click.offer_id)
                 ) ?? null
                 : null)
-        ) ?? { name: click[clickProp] ?? UNKNOWN, };
+        ) ?? { name: click[clickProp] ?? UNKNOWN };
+
+        // if (name === ITEM_NAMES.CAMPAIGNS) {
+        //     // Below is a fix for campaign.flow.defaultPath and campaign.flow.rulePaths properties in the database
+        //     // The names of these properties were changed:
+        //     // campaign.flow.defaultPath => campaign.flow.defaultRoute
+        //     // campaign.flow.rulePaths => campaign.flow.ruleRoutes
+        //     dataItem = {
+        //         ...dataItem,
+        //         flow: {
+        //             ...dataItem.flow,
+        //             defaultRoute: { ...dataItem?.flow?.defaultPath },
+        //             ruleRoutes: [...dataItem?.flow?.rulePaths],
+        //             defaultPath: undefined,
+        //             rulePaths: undefined
+        //         }
+        //     };
+        // }
 
         if (filteredResult) {
             filteredResult.clicks.push(structuredClone(click))
