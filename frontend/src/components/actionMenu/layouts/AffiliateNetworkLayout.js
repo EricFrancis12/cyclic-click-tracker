@@ -3,19 +3,18 @@ import { LoadingWrapper } from './ActionMenuLayout';
 import MenuHeader from '../../MenuHeader';
 import MenuFooter from '../../MenuFooter';
 import TagsInput from '../TagsInput';
-import UrlInput from '../UrlInput';
 import { Input } from '../baseComponents';
 import { ACTION_MENU_TYPES } from '../ActionMenu';
 
-export default function LandingPageLayout(props) {
+export default function AffiliateNetworkLayout(props) {
     const { actionMenu, setActionMenu, loading, handleSave, handleClose } = props;
     const type = actionMenu?.type ?? ACTION_MENU_TYPES.NEW_ITEM; // defaults to new item
-    const landingPage = actionMenu?.data ?? {};
+    const affiliateNetwork = actionMenu?.data ?? {};
 
     const [menuData, setMenuData] = useState({
-        name: landingPage?.name ?? '',
-        url: landingPage?.url ?? '',
-        tags: landingPage?.tags ?? []
+        name: affiliateNetwork?.name ?? '',
+        defaultNewOfferString: affiliateNetwork?.defaultNewOfferString ?? '',
+        tags: affiliateNetwork?.tags ?? []
     });
 
     useEffect(() => {
@@ -24,13 +23,6 @@ export default function LandingPageLayout(props) {
             data: structuredClone(menuData)
         });
     }, [menuData]);
-
-    function handleUrlInputChange(newValue) {
-        setMenuData({
-            ...menuData,
-            url: newValue
-        });
-    }
 
     return (
         <>
@@ -51,14 +43,16 @@ export default function LandingPageLayout(props) {
                         <Input name='Name' defaultValue={menuData.name}
                             onChange={e => setMenuData({ ...menuData, name: e.target.value })}
                         />
-                        <UrlInput value={menuData.url} onChange={newValue => handleUrlInputChange(newValue)} />
+                        {/* <Input name='Default New Offer String' defaultValue={menuData.name}
+                            onChange={e => setMenuData({ ...menuData, defaultNewOfferString: e.target.value })}
+                        /> */}
                         <TagsInput menuData={menuData} setMenuData={setMenuData} />
                     </div>
                 </div>
             </LoadingWrapper>
             <MenuFooter disabled={loading}
                 onSave={e => handleSave({
-                    endpoint: type === ACTION_MENU_TYPES.EDIT_ITEM ? `/landing-pages/${landingPage._id}` : '/landing-pages',
+                    endpoint: type === ACTION_MENU_TYPES.EDIT_ITEM ? `/affiliate-networks/${affiliateNetwork._id}` : '/affiliate-networks',
                     method: type === ACTION_MENU_TYPES.EDIT_ITEM ? 'PUT' : 'POST',
                     headers: {
                         'Content-Type': 'application/json'

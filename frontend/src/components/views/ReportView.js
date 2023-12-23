@@ -11,9 +11,10 @@ import { mapClicks } from './HomeView';
 export const MAX_REPORT_CHAIN_LENGTH = 3;
 
 export default function ReportView(props) {
-    const { view_id, active, handleTabClick, closeView, item: reportItem, timeframe: _timeframe } = props;
+    const { view_id, active, handleTabClick, closeView, dataItem, item: reportItem, timeframe: _timeframe } = props;
 
     const { clicks, data } = useAuth();
+    const filteredClicks = clicks.filter(click => click[reportItem.clickProp] === dataItem._id);
 
     const [timeframe, setTimeframe] = useState(_timeframe || null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -27,11 +28,11 @@ export default function ReportView(props) {
         { name: null, disabled: true }
     ]);
 
-    const [mappedData, setMappedData] = useState(mapClicks({ clicks, data, activeItem, timeframe }, false));
+    const [mappedData, setMappedData] = useState(mapClicks({ clicks: filteredClicks, data, activeItem, timeframe }, false));
 
     useEffect(() => {
         if (clicks && data && timeframe) {
-            setMappedData(mapClicks({ clicks, data, activeItem, timeframe }, false));
+            setMappedData(mapClicks({ clicks: filteredClicks, data, activeItem, timeframe }, false));
         }
     }, [clicks, data, timeframe]);
 
@@ -41,9 +42,9 @@ export default function ReportView(props) {
 
     return (
         <div style={{ zIndex: active ? 100 : 1 }}>
-            <Tab icon={faFile} name={reportItem.name} view_id={view_id} active={active} handleTabClick={handleTabClick} closeView={closeView}>
-                <div className='absolute' style={{ height: '100vh', width: '100vw' }} />
-            </Tab>
+            <Tab icon={faFile} name={`${reportItem.singName ?? ''}: ${dataItem.name}`} view_id={view_id} active={active}
+                handleTabClick={handleTabClick} closeView={closeView}
+            />
             <div className='absolute' style={{ top: '40px', left: '0', width: '100vw', fontSize: '13px' }}>
                 <UpperControlPanel activeItem={activeItem} setActiveItem={setActiveItem} excludeItemNames={[reportItem.name]} />
                 <LowerControlPanel activeItem={activeItem} setActiveItem={setActiveItem} mappedData={mappedData}

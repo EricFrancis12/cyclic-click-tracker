@@ -13,18 +13,17 @@ export function AuthProvider({ children }) {
     const [loggedIn, setLoggedIn] = useState(Cookies.get('loggedIn') === 'true' ? true : false);
     const [data, setData] = useState([]);
     const [clicks, setClicks] = useState([]);
+    const [fetchingData, setFetchingData] = useState(false);
 
     const clicksMemo = useClicksMemo(clicks);
-    
-    const fetchingData = useRef(false);
 
     useEffect(() => {
         fetchData();
     }, [loggedIn]);
 
-    function fetchData() {
-        if ((loggedIn && !fetchingData.current) || DISABLE_AUTH === true) {
-            fetchingData.current = true;
+    async function fetchData() {
+        if ((loggedIn && !fetchingData) || DISABLE_AUTH === true) {
+            setFetchingData(true);
             setData([]);
             setClicks([]);
 
@@ -36,10 +35,13 @@ export function AuthProvider({ children }) {
                 }
 
                 if (fetchData.count === 2) {
-                    fetchingData.current = false;
                     fetchData.count = undefined;
                 }
+                setFetchingData(false);
             };
+
+            console.log('running fetchData timeout @ AuthContext.js');
+            await new Promise((resolve) => setTimeout(() => resolve(), 2000));
 
             fetch('/data').then(async (res) => {
                 if (res.status === 401) {
@@ -120,6 +122,7 @@ export function AuthProvider({ children }) {
         clicks,
         clicksMemo,
         fetchData,
+        fetchingData,
         loggedIn,
         login,
         logout,

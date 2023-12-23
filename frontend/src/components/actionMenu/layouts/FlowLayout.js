@@ -3,19 +3,29 @@ import { LoadingWrapper } from './ActionMenuLayout';
 import MenuHeader from '../../MenuHeader';
 import MenuFooter from '../../MenuFooter';
 import TagsInput from '../TagsInput';
-import UrlInput from '../UrlInput';
+import FlowBuilder from '../../FlowBuilder/FlowBuilder';
 import { Input } from '../baseComponents';
 import { ACTION_MENU_TYPES } from '../ActionMenu';
+import { DEFAULT_PATH } from '../../FlowBuilder/Path';
+import flowConfig from '../../../config/Flow.config.json';
+const { types: FLOW_TYPES } = flowConfig;
 
-export default function LandingPageLayout(props) {
+export default function FlowLayout(props) {
     const { actionMenu, setActionMenu, loading, handleSave, handleClose } = props;
     const type = actionMenu?.type ?? ACTION_MENU_TYPES.NEW_ITEM; // defaults to new item
-    const landingPage = actionMenu?.data ?? {};
+    const flow = actionMenu?.data ?? {};
 
     const [menuData, setMenuData] = useState({
-        name: landingPage?.name ?? '',
-        url: landingPage?.url ?? '',
-        tags: landingPage?.tags ?? []
+        name: flow?.name ?? '',
+        _id: flow?._id ?? undefined,
+        type: FLOW_TYPES.SAVED,
+        defaultRoute: flow?.defaultRoute ?? {
+            active: true,
+            rules: null,
+            paths: [structuredClone(DEFAULT_PATH)]
+        },
+        ruleRoutes: flow?.ruleRoutes ?? [],
+        tags: flow?.tags ?? []
     });
 
     useEffect(() => {
@@ -24,13 +34,6 @@ export default function LandingPageLayout(props) {
             data: structuredClone(menuData)
         });
     }, [menuData]);
-
-    function handleUrlInputChange(newValue) {
-        setMenuData({
-            ...menuData,
-            url: newValue
-        });
-    }
 
     return (
         <>
@@ -48,17 +51,17 @@ export default function LandingPageLayout(props) {
             <LoadingWrapper loading={loading}>
                 <div className='h-full w-full'>
                     <div className='flex flex-col justify-start items-start gap-2 px-4 py-2 w-full'>
-                        <Input name='Name' defaultValue={menuData.name}
+                        <Input name='Flow Name' defaultValue={menuData.name}
                             onChange={e => setMenuData({ ...menuData, name: e.target.value })}
                         />
-                        <UrlInput value={menuData.url} onChange={newValue => handleUrlInputChange(newValue)} />
+                        <FlowBuilder flow={menuData} setFlow={setMenuData} />
                         <TagsInput menuData={menuData} setMenuData={setMenuData} />
                     </div>
                 </div>
             </LoadingWrapper>
             <MenuFooter disabled={loading}
                 onSave={e => handleSave({
-                    endpoint: type === ACTION_MENU_TYPES.EDIT_ITEM ? `/landing-pages/${landingPage._id}` : '/landing-pages',
+                    endpoint: type === ACTION_MENU_TYPES.EDIT_ITEM ? `/flows/${flow._id}` : '/flows',
                     method: type === ACTION_MENU_TYPES.EDIT_ITEM ? 'PUT' : 'POST',
                     headers: {
                         'Content-Type': 'application/json'

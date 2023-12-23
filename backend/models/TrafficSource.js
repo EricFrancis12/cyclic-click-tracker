@@ -11,7 +11,7 @@ const { TS } = require('../../frontend/src/config/config.json').suffixes;
 
 class TrafficSource {
     constructor(props) {
-        const { name, postbackUrl = '', tokens = [], tags, jsonData } = props;
+        const { name, postbackUrl = '', defaultTokens, customTokens = [], tags, jsonData } = props;
 
         if (!jsonData) {
             this._id = `${removeIllegalChars(name)}_${crypto.randomUUID()}_${TS}`;
@@ -21,7 +21,8 @@ class TrafficSource {
 
             this.name = name || this._id;
             this.postbackUrl = postbackUrl;
-            this.tokens = tokens;
+            this.defaultTokens = defaultTokens;
+            this.customTokens = customTokens;
 
             this.tags = tags ?? [];
         } else {
@@ -141,9 +142,9 @@ TrafficSource.create = function () {
 
 
 TrafficSource.defaultTokens = {
-    externalId: { name: 'External ID', key: 'externalId' },
-    cost: { name: 'Cost', key: 'cost' },
-    payout: { name: 'Payout', key: 'payout' }
+    externalId: { name: 'External ID', queryParam: 'externalId', isDefault: true },
+    cost: { name: 'Cost', queryParam: 'cost', isDefault: true },
+    payout: { name: 'Payout', queryParam: 'payout', isDefault: true }
 };
 
 

@@ -5,8 +5,8 @@ export default function Button(props) {
     const { children, disabled, icon, handleClick, text = '', className = '' } = props;
 
     return (
-        <div className={(className)}>
-            <div onClick={!disabled ? handleClick : e => { }}
+        <div className={(className)} style={{ userSelect: 'none' }}>
+            <div onClick={!disabled ? handleClick : e => null}
                 className={(!disabled ? 'cursor-pointer hover:opacity-70 ' : 'opacity-40 ') + ' px-2 py-2'}
                 style={{
                     border: 'solid lightgrey 1px',

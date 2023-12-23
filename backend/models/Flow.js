@@ -8,7 +8,7 @@ const { DEFAULT, RULE } = FlowConfig.routeTypes;
 
 class Flow {
     constructor(props) {
-        const { name, type = BUILT_IN, defaultRoute, rulesRoutes, tags } = props;
+        const { name, type = BUILT_IN, defaultRoute, ruleRoutes, tags } = props;
 
         this.type = type;
 
@@ -19,7 +19,7 @@ class Flow {
             this.type = BUILT_IN;
             this._id = BUILT_IN_FL;
             this.defaultRoute = defaultRoute;
-            this.rulesRoutes = rulesRoutes ?? [];
+            this.ruleRoutes = ruleRoutes ?? [];
 
             this.tags = tags ?? [];
         }

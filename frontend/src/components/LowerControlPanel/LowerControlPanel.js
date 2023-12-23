@@ -13,6 +13,8 @@ export default function LowerControlPanel(props) {
     const { mappedData, activeItem, setActiveItem, newReport, newItem, editItem, duplicateItem, archiveItem } = props;
     const { timeframe, setTimeframe, searchQuery, setSearchQuery, reportChain, setReportChain, reportItem, drilldown } = props;
 
+    const selectedItems = mappedData?.filter(item => item.selected === true) || [];
+
     return (
         <div className='flex flex-col justify-center align-start w-full bg-LowerConrolPanel_backgroundColor'
             style={{ borderTop: 'solid lightgrey 3px' }}>
@@ -28,12 +30,13 @@ export default function LowerControlPanel(props) {
                 <div className='flex flex-wrap gap-2 justify-center items-center'>
                     <CalendarButton timeframe={timeframe} setTimeframe={setTimeframe} />
                     <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                    {newReport && <ReportButton newReport={newReport} mappedData={mappedData} />}
+                    {newReport && <ReportButton newReport={newReport} selectedItems={selectedItems} />}
                     {newItem && <NewButton activeItem={activeItem} newItem={newItem} />}
-                    {editItem && <EditButton editItem={editItem} mappedData={mappedData}/>}
-                    {(duplicateItem || archiveItem) && <ActionsDropdown mappedData={mappedData}
+                    {editItem && <EditButton editItem={editItem} selectedItems={selectedItems} />}
+                    {(duplicateItem || archiveItem) && <ActionsDropdown selectedItems={selectedItems}
                         duplicateItem={duplicateItem} archiveItem={archiveItem} />}
-                    {drilldown && <DrilldownButton drilldown={drilldown} mappedData={mappedData} />}
+                    {/* starter code for drilldown functionality: */}
+                    {/* {drilldown && <DrilldownButton drilldown={drilldown} mappedData={mappedData} />} */}
                 </div>
             </div>
             <div className='flex gap-6 mx-8 my-4 w-full'>

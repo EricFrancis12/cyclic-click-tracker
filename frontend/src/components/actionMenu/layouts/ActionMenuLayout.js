@@ -2,12 +2,12 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ITEM_NAMES } from '../../UpperControlPanel/UpperControlPanel';
-// import AffiliateNetworkLayout from './AffiliateNetworkLayout';
+import AffiliateNetworkLayout from './AffiliateNetworkLayout';
 import CampaignLayout from './CampaignLayout';
-// import FlowLayout from './FlowLayout';
+import FlowLayout from './FlowLayout';
 import LandingPageLayout from './LandingPageLayout';
 import OfferLayout from './OfferLayout';
-// import TrafficSourceLayout from './TrafficSourceLayout';
+import TrafficSourceLayout from './TrafficSourceLayout';
 
 export function LoadingWrapper(props) {
     const { loading, children } = props;
@@ -36,12 +36,12 @@ export default function ActionMenuLayout(props) {
 
     let Layout;
     switch (name) {
-        // case ITEM_NAMES.AFFILIATE_NETWORKS: Layout = AffiliateNetworkLayout; break;
+        case ITEM_NAMES.AFFILIATE_NETWORKS: Layout = AffiliateNetworkLayout; break;
         case ITEM_NAMES.CAMPAIGNS: Layout = CampaignLayout; break;
-        // case ITEM_NAMES.FLOWS: Layout = FlowLayout; break;
+        case ITEM_NAMES.FLOWS: Layout = FlowLayout; break;
         case ITEM_NAMES.LANDING_PAGES: Layout = LandingPageLayout; break;
         case ITEM_NAMES.OFFERS: Layout = OfferLayout; break;
-        // case ITEM_NAMES.TRAFFIC_SOURCES: Layout = TrafficSourceLayout; break;
+        case ITEM_NAMES.TRAFFIC_SOURCES: Layout = TrafficSourceLayout; break;
         default: Layout = () => '';
     }
 

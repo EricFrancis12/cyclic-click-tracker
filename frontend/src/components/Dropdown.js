@@ -4,11 +4,10 @@ export default function Dropdown(props) {
     const { children, ref, id, isHovered = true } = props;
 
     return (
-        <div className='bg-white'
+        <div className='absolute bg-white'
             ref={ref}
             id={id}
             style={{
-                position: 'absolute',
                 display: isHovered ? 'block' : 'none',
                 zIndex: 999,
                 width: 'auto'

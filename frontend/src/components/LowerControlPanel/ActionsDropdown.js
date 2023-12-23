@@ -3,8 +3,7 @@ import DropdownButton, { DropdownItem } from './DropdownButton';
 import { faFire, faCopy, faArchive, faClone, faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default function ActionsDropdown(props) {
-    const { mappedData, duplicateItem, archiveItem } = props;
-    const selectedItems = mappedData?.filter(item => item.selected === true) || [];
+    const { selectedItems, duplicateItem, archiveItem } = props;
 
     const [active, setActive] = useState(false);
 

@@ -3,12 +3,14 @@ import Button from '../Button';
 import { faRandom } from '@fortawesome/free-solid-svg-icons';
 
 export default function ReportButton(props) {
-    const { newReport, mappedData } = props;
-
-    const selectedItems = mappedData?.filter(item => item.selected === true) || [];
+    const { newReport, selectedItems } = props;
 
     function handleButtonClick(e) {
-        newReport();
+        if (selectedItems.length !== 1) return;
+
+        newReport({
+            dataItem: structuredClone(selectedItems[0])
+        });
     }
 
     return (

@@ -5,7 +5,7 @@ import { traverseParentsForClass } from '../../utils/utils';
 export const URL_INPUT_CLASS = 'URL_INPUT_CLASS';
 
 export default function UrlInput(props) {
-    const { text, defaultValue, value = '', onChange } = props;
+    const { text = 'URL', placeholder = '', value = '', defaultValue, onChange } = props;
 
     const insertionPoint = useRef(value?.length ?? 0);
 
@@ -44,19 +44,20 @@ export default function UrlInput(props) {
     })
 
     return (
-        <div className={URL_INPUT_CLASS + ' flex flex-col justify-start items-start gap-2 w-full'}>
+        <div className={URL_INPUT_CLASS + ' flex flex-col justify-start items-start w-full'}>
             <span>
-                {text ? text : 'URL:'}
+                {text}
             </span>
             <div className='w-full'>
-                <textarea className='w-full min-h-[150px] p-1 bg-white'
+                <textarea placeholder={placeholder ? placeholder : text}
+                    className='w-full min-h-[150px] px-2 py-1 bg-white'
                     style={{ border: 'solid 1px grey', borderRadius: '5px' }}
                     value={value} defaultValue={defaultValue}
                     onChange={e => handleChange(e)}
                     onSelect={e => handleSelect(e)}
                 />
             </div>
-            <div className='flex flex-wrap justify-start items-center gap-2 h-full text-sm'>
+            <div className='flex flex-wrap justify-start items-center gap-2 h-full mt-2 text-sm'>
                 <div className='italic'>
                     Available Tokens:
                 </div>

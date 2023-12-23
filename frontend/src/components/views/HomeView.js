@@ -163,9 +163,9 @@ export default function HomeView(props) {
 
     return (
         <div style={{ zIndex: active ? 100 : 1 }}>
-            <Tab icon={faHome} name='Home' view_id={view_id} active={active} handleTabClick={handleTabClick}>
-                <div className='absolute' style={{ height: '100vh', width: '100vw' }} />
-            </Tab>
+            <Tab icon={faHome} name='Home' view_id={view_id}
+                active={active} handleTabClick={handleTabClick}
+            />
             <div className='absolute' style={{ top: '40px', left: '0', width: '100vw', fontSize: '13px' }}>
                 <UpperControlPanel activeItem={activeItem} setActiveItem={setActiveItem} />
                 <LowerControlPanel activeItem={activeItem} mappedData={mappedData}

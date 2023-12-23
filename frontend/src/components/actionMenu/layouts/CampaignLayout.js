@@ -239,7 +239,7 @@ export default function CampaignLayout(props) {
                             </>
                         }
                         {menuData.flow.type === FLOW_TYPES.URL &&
-                            <UrlInput text='Enter Destination URL:' value={urlFlow.url}
+                            <UrlInput text='Enter Destination URL' value={urlFlow.url}
                                 onChange={newValue => setUrlFlow({ ...urlFlow, url: newValue })}
                             />
                         }

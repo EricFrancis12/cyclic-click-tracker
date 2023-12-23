@@ -9,14 +9,14 @@ export function Wrapper({ children }) {
 }
 
 export function Input(props) {
-    const { name, defaultValue, onChange } = props;
+    const { name = '', placeholder = name, defaultValue, onChange } = props;
 
     return (
         <Wrapper>
             <span>
                 {name}
             </span>
-            <input type='text' placeholder='Name'
+            <input type='text' placeholder={placeholder}
                 className='w-full px-2 py-1'
                 style={{ border: 'solid 1px grey', borderRadius: '6px' }}
                 onChange={onChange}
