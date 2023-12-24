@@ -6,7 +6,8 @@ const router = express.Router();
 const auth = require('../../middleware/auth/auth');
 const { getData } = require('../../data/data');
 
-const validator = require('../../middleware/validator/validator');
+const Validator = require('../../middleware/validator/Validator');
+const { validate } = new Validator('Campaigns');
 
 
 
@@ -53,7 +54,7 @@ router.get('/:campaign_id', auth, (req, res) => {
     });
 });
 
-router.post('/', auth, (req, res, next) => validator(req, res, next, 'Campaign'), (req, res) => {
+router.post('/', auth, validate, (req, res) => {
     const { name, trafficSource_id, landingPageRotation, offerRotation, geoName, tags, flow } = req.body;
 
     try {
@@ -81,7 +82,7 @@ router.post('/', auth, (req, res, next) => validator(req, res, next, 'Campaign')
     }
 });
 
-router.put('/:campaign_id', auth, validator, (req, res) => {
+router.put('/:campaign_id', auth, validate, (req, res) => {
     try {
         const campaigns = getData().campaigns;
         const campaign = campaigns.find(_campaign => _campaign._id === req.params.campaign_id);
